@@ -1,0 +1,3842 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%3E%0A%20%20%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%228%22%20fill%3D%22%230A0A0A%22%20%2F%3E%0A%20%20%3Cpath%20d%3D%22M16%205%20L26%2025%20H6%20Z%22%20fill%3D%22%23fff%22%20%2F%3E%0A%20%20%3Ccircle%20cx%3D%2216%22%20cy%3D%2218%22%20r%3D%223%22%20fill%3D%22%230A0A0A%22%20%2F%3E%0A%3C%2Fsvg%3E" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <!-- Mobile web app / PWA (full-screen standalone mode) -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Radiant" />
+    <meta name="application-name" content="Radiant" />
+    <script>
+      // Inline web app manifest (Blob URL) + generated app icons. No external files needed.
+      (function () {
+        try {
+          var BG = "#0a0a0a";
+          var SVG_ICON =
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
+            '<rect width="512" height="512" rx="128" fill="#0a0a0a"/>' +
+            '<path d="M256 80 L416 400 H96 Z" fill="#ffffff"/>' +
+            '<circle cx="256" cy="288" r="48" fill="#0a0a0a"/></svg>';
+          var svgUrl = "data:image/svg+xml," + encodeURIComponent(SVG_ICON);
+
+          // Raster icons (Android/Chrome install + iOS home screen need PNG), drawn on a canvas.
+          function drawPng(size, fullBleed) {
+            var c = document.createElement("canvas");
+            c.width = c.height = size;
+            var x = c.getContext("2d");
+            x.fillStyle = BG;
+            if (fullBleed) {
+              x.fillRect(0, 0, size, size);
+            } else {
+              var r = size * 0.25;
+              x.beginPath();
+              x.moveTo(r, 0);
+              x.arcTo(size, 0, size, size, r);
+              x.arcTo(size, size, 0, size, r);
+              x.arcTo(0, size, 0, 0, r);
+              x.arcTo(0, 0, size, 0, r);
+              x.closePath();
+              x.fill();
+            }
+            var k = ((fullBleed ? 0.62 : 0.86) * size) / 32;
+            x.translate(size / 2, size / 2);
+            x.scale(k, k);
+            x.translate(-16, -15);
+            x.fillStyle = "#ffffff";
+            x.beginPath();
+            x.moveTo(16, 5);
+            x.lineTo(26, 25);
+            x.lineTo(6, 25);
+            x.closePath();
+            x.fill();
+            x.fillStyle = BG;
+            x.beginPath();
+            x.arc(16, 18, 3, 0, Math.PI * 2);
+            x.fill();
+            return c.toDataURL("image/png");
+          }
+
+          var icons = [{ src: svgUrl, sizes: "any", type: "image/svg+xml", purpose: "any" }];
+          try {
+            icons.push({ src: drawPng(192, false), sizes: "192x192", type: "image/png", purpose: "any" });
+            icons.push({ src: drawPng(512, false), sizes: "512x512", type: "image/png", purpose: "any" });
+            icons.push({ src: drawPng(512, true), sizes: "512x512", type: "image/png", purpose: "maskable" });
+            var touch = document.createElement("link");
+            touch.rel = "apple-touch-icon";
+            touch.href = drawPng(180, true);
+            document.head.appendChild(touch);
+          } catch (e) {
+            /* canvas unavailable: SVG icon only */
+          }
+
+          var manifest = {
+            name: "Radiant AI",
+            short_name: "Radiant",
+            description: "Radiant \u2014 a sleek BYOK AI chat client by Aetheris AI.",
+            display: "standalone",
+            orientation: "portrait",
+            background_color: BG,
+            theme_color: BG,
+            icons: icons
+          };
+          var loc = window.location;
+          if (/^https?:$/.test(loc.protocol)) {
+            // Blob manifests can't resolve relative URLs, so use absolute ones.
+            var base = loc.origin + loc.pathname;
+            manifest.id = base;
+            manifest.start_url = base;
+            manifest.scope = loc.origin + loc.pathname.replace(/[^\/]*$/, "");
+          }
+          var blob = new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" });
+          var link = document.createElement("link");
+          link.rel = "manifest";
+          link.href = URL.createObjectURL(blob);
+          document.head.appendChild(link);
+        } catch (e) {
+          console.warn("PWA manifest setup failed", e);
+        }
+      })();
+    </script>
+    <title>Radiant — by Aetheris AI</title>
+    <meta
+      name="description"
+      content="Radiant — a sleek BYOK AI chat client by Aetheris AI. Bring your own keys for OpenAI, Anthropic, and OpenRouter."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=DotGothic16&display=swap"
+      rel="stylesheet"
+    />
+    <meta property="og:image" content="https://bolt.new/static/og_default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
+
+    <!-- Apply saved theme before first paint -->
+    <script>
+      try {
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('radiant.theme') || 'classic-dark');
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'classic-dark');
+      }
+    </script>
+
+    <!-- Tailwind CSS (v3 Play CDN) + the project's tailwind.config.js, inlined -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            screens: { xs: '400px' },
+            colors: {
+              bg: 'var(--c-bg)',
+              surface: 'var(--c-surface)',
+              'surface-2': 'var(--c-surface-2)',
+              border: 'var(--c-border)',
+              text: 'var(--c-text)',
+              muted: 'var(--c-muted)',
+              accent: 'var(--c-accent)',
+              'accent-soft': 'var(--c-accent-soft)',
+              'accent-text': 'var(--c-accent-text)',
+              'code-bg': 'var(--c-code-bg)',
+              danger: 'var(--c-danger)',
+            },
+            fontFamily: {
+              sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+              mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
+              display: ['var(--font-display)', 'var(--font-mono)', 'monospace'],
+            },
+            borderRadius: { theme: 'var(--radius)' },
+            boxShadow: { theme: 'var(--shadow)' },
+            transitionTimingFunction: { theme: 'var(--ease)' },
+          },
+        },
+      };
+    </script>
+
+    <!-- All custom CSS (theme engine, animations, markdown, syntax tokens) -->
+    <style type="text/tailwindcss">
+/* ============================================================
+   THEME ENGINE TOKENS
+   ============================================================ */
+
+:root {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Inter', system-ui, sans-serif;
+  --radius: 1rem;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 24px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.12), 0 12px 48px rgba(0, 0, 0, 0.08);
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dot-size: 0px;
+  --dot-color: transparent;
+  --dot-gap: 0px;
+}
+
+/* ---- Classic Dark (Perplexity-inspired) ---- */
+:root[data-theme='classic-dark'] {
+  --c-bg: #0f0f10;
+  --c-surface: #1a1a1c;
+  --c-surface-2: #242427;
+  --c-border: #2a2a2e;
+  --c-text: #eaeaec;
+  --c-muted: #8b8b92;
+  --c-accent: #20808e;
+  --c-accent-soft: rgba(32, 128, 142, 0.15);
+  --c-accent-text: #ffffff;
+  --c-code-bg: #131316;
+  --c-danger: #ef4444;
+  --font-display: 'Inter', system-ui, sans-serif;
+  --radius: 1rem;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --dot-size: 0px;
+}
+
+/* ---- Classic Light (Perplexity-inspired) ---- */
+:root[data-theme='classic-light'] {
+  --c-bg: #f7f7f8;
+  --c-surface: #ffffff;
+  --c-surface-2: #f0f0f3;
+  --c-border: #e4e4e7;
+  --c-text: #1a1a1c;
+  --c-muted: #71717a;
+  --c-accent: #20808e;
+  --c-accent-soft: rgba(32, 128, 142, 0.1);
+  --c-accent-text: #ffffff;
+  --c-code-bg: #f4f4f5;
+  --c-danger: #dc2626;
+  --font-display: 'Inter', system-ui, sans-serif;
+  --radius: 1rem;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --dot-size: 0px;
+}
+
+/* ---- Perplexity Cream (warm light) ---- */
+:root[data-theme='perplexity-cream'] {
+  --c-bg: #F9F9F8;
+  --c-surface: #EFEFEA;
+  --c-surface-2: #E5E5DF;
+  --c-border: #D8D8D2;
+  --c-text: #1A1A1A;
+  --c-muted: #666666;
+  --c-accent: #1F7B8C;
+  --c-accent-soft: rgba(31, 123, 140, 0.1);
+  --c-accent-text: #ffffff;
+  --c-code-bg: #F0F0EB;
+  --c-danger: #c0392b;
+  --font-display: 'Inter', system-ui, sans-serif;
+  --radius: 1rem;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 16px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --dot-size: 0px;
+}
+
+/* ---- Nothing Style (Dot Matrix Monochrome) ---- */
+:root[data-theme='nothing'] {
+  --c-bg: #000000;
+  --c-surface: #0a0a0a;
+  --c-surface-2: #141414;
+  --c-border: #2a2a2a;
+  --c-text: #ffffff;
+  --c-muted: #666666;
+  --c-accent: #ffffff;
+  --c-accent-soft: rgba(255, 255, 255, 0.06);
+  --c-accent-text: #000000;
+  --c-code-bg: #050505;
+  --c-danger: #ff4444;
+  --font-display: 'DotGothic16', monospace;
+  --font-mono: 'DotGothic16', monospace;
+  --radius: 0px;
+  --shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --shadow-lg: 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --dot-size: 2px;
+  --dot-color: rgba(255, 255, 255, 0.07);
+  --dot-gap: 22px;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+
+* {
+  border-color: var(--c-border);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.5s var(--ease), color 0.5s var(--ease);
+  overflow: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(var(--dot-color) var(--dot-size), transparent var(--dot-size));
+  background-size: var(--dot-gap) var(--dot-gap);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+}
+
+[data-theme='nothing'] body::before {
+  opacity: 1;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   RADIANT BRAND: FRAGMENTED R MARK
+   ============================================================ */
+
+.radiant-mark {
+  filter: saturate(1.1) contrast(1.05);
+  opacity: 0.92;
+  transition: opacity 0.4s var(--ease);
+}
+.radiant-mark:hover { opacity: 1; }
+
+/* Subtle geometric glow behind the mark on dark themes */
+[data-theme='classic-dark'] .radiant-mark,
+[data-theme='nothing'] .radiant-mark {
+  filter: saturate(1.2) contrast(1.1) brightness(1.05);
+  opacity: 0.95;
+}
+
+/* ============================================================
+   SHATTERED GLASS BACKGROUND TEXTURE (dark mode only)
+   ============================================================ */
+
+.radiant-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+  background-image:
+    linear-gradient(105deg, transparent 48%, rgba(32, 128, 142, 0.018) 49%, rgba(32, 128, 142, 0.018) 51%, transparent 52%),
+    linear-gradient(75deg, transparent 30%, rgba(255, 255, 255, 0.012) 31%, rgba(255, 255, 255, 0.012) 33%, transparent 34%),
+    linear-gradient(165deg, transparent 62%, rgba(32, 128, 142, 0.014) 63%, rgba(32, 128, 142, 0.014) 65%, transparent 66%),
+    linear-gradient(195deg, transparent 18%, rgba(255, 255, 255, 0.008) 19%, rgba(255, 255, 255, 0.008) 21%, transparent 22%),
+    linear-gradient(135deg, transparent 78%, rgba(32, 128, 142, 0.01) 79%, rgba(32, 128, 142, 0.01) 81%, transparent 82%);
+  background-size: 100% 100%;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 90%);
+}
+
+[data-theme='classic-dark'] .radiant-screen::before,
+[data-theme='nothing'] .radiant-screen::before {
+  opacity: 1;
+}
+
+/* Keep content above the texture */
+.radiant-screen > *:not(.fixed):not(.absolute) { position: relative; z-index: 1; }
+
+/* ============================================================
+   COLLAPSED-INPUT GEOMETRIC GLOW
+   ============================================================ */
+
+@keyframes radiant-glow-shift {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px var(--c-border),
+      0 4px 24px rgba(0, 0, 0, 0.08),
+      0 0 20px 0px var(--c-accent-soft);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px var(--c-accent),
+      0 4px 24px rgba(0, 0, 0, 0.08),
+      0 0 28px 2px var(--c-accent-soft);
+  }
+}
+
+.radiant-input-glow {
+  animation: radiant-glow-shift 3.5s ease-in-out infinite;
+}
+
+/* ============================================================
+   FRAGMENTED CHIP BORDERS
+   ============================================================ */
+
+.radiant-chip {
+  position: relative;
+  border: none;
+  background:
+    linear-gradient(var(--c-surface), var(--c-surface)) padding-box,
+    repeating-linear-gradient(
+      115deg,
+      var(--c-border) 0deg,
+      var(--c-border) 3deg,
+      transparent 3deg,
+      transparent 6deg,
+      var(--c-border) 6deg,
+      var(--c-border) 9deg,
+      transparent 9deg,
+      transparent 14deg
+    ) border-box;
+  border: 1px solid transparent;
+  background-clip: padding-box, border-box;
+}
+.radiant-chip:hover {
+  background:
+    linear-gradient(var(--c-surface-2), var(--c-surface-2)) padding-box,
+    repeating-linear-gradient(
+      115deg,
+      var(--c-accent) 0deg,
+      var(--c-accent) 3deg,
+      transparent 3deg,
+      transparent 6deg,
+      var(--c-accent) 6deg,
+      var(--c-accent) 9deg,
+      transparent 9deg,
+      transparent 14deg
+    ) border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+.scroll-thin::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: var(--c-border);
+  border-radius: 999px;
+}
+.scroll-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--c-muted);
+}
+
+.scroll-thin-x::-webkit-scrollbar { height: 0; display: none; }
+.scroll-thin-x { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fade-in-up 0.35s var(--ease) both; }
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in { animation: fade-in 0.3s var(--ease) both; }
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.animate-slide-in-right { animation: slide-in-right 0.35s var(--ease) both; }
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in { animation: scale-in 0.25s var(--ease) both; }
+
+@keyframes slide-up-sheet {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.animate-sheet-up { animation: slide-up-sheet 0.35s var(--ease) both; }
+
+@keyframes slide-down-sheet {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+.animate-sheet-down { animation: slide-down-sheet 0.3s var(--ease) both; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+.typing-dot { animation: blink 1.4s infinite both; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.cursor-blink { animation: cursor-blink 1s step-end infinite; }
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  70% { transform: scale(1.1); opacity: 0; }
+  100% { transform: scale(0.95); opacity: 0; }
+}
+.pulse-ring { animation: pulse-ring 1.5s var(--ease) infinite; }
+
+/* ============================================================
+   MARKDOWN / PROSE
+   ============================================================ */
+
+.prose-chat {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  word-wrap: break-word;
+}
+.prose-chat p { margin: 0 0 0.75em 0; }
+.prose-chat p:last-child { margin-bottom: 0; }
+.prose-chat h1, .prose-chat h2, .prose-chat h3 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 1.2em 0 0.5em 0;
+}
+.prose-chat h1 { font-size: 1.4em; }
+.prose-chat h2 { font-size: 1.2em; }
+.prose-chat h3 { font-size: 1.05em; }
+.prose-chat ul, .prose-chat ol {
+  margin: 0.5em 0 0.75em 0;
+  padding-left: 1.5em;
+}
+.prose-chat li { margin: 0.25em 0; }
+.prose-chat ul li { list-style: disc; }
+.prose-chat ol li { list-style: decimal; }
+.prose-chat a {
+  color: var(--c-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-chat blockquote {
+  border-left: 2px solid var(--c-border);
+  padding-left: 1em;
+  margin: 0.75em 0;
+  color: var(--c-muted);
+}
+.prose-chat code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--c-surface-2);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  border: 1px solid var(--c-border);
+}
+.prose-chat pre { margin: 0; }
+.prose-chat table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75em 0;
+  font-size: 0.88em;
+}
+.prose-chat th, .prose-chat td {
+  border: 1px solid var(--c-border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+.prose-chat th { background: var(--c-surface-2); font-weight: 600; }
+.prose-chat hr { border: none; border-top: 1px solid var(--c-border); margin: 1em 0; }
+
+/* ============================================================
+   SYNTAX HIGHLIGHT TOKENS
+   ============================================================ */
+
+.tok-kw { color: #c678dd; }
+.tok-str { color: #98c379; }
+.tok-com { color: #5c6370; font-style: italic; }
+.tok-num { color: #d19a66; }
+.tok-bool { color: #d19a66; font-weight: 500; }
+.tok-fn { color: #61afef; }
+
+:root[data-theme='classic-light'] .tok-kw { color: #a626a4; }
+:root[data-theme='classic-light'] .tok-str { color: #50a14f; }
+:root[data-theme='classic-light'] .tok-com { color: #a0a1a7; }
+:root[data-theme='classic-light'] .tok-num { color: #986801; }
+:root[data-theme='classic-light'] .tok-bool { color: #986801; }
+:root[data-theme='classic-light'] .tok-fn { color: #4078f2; }
+
+:root[data-theme='perplexity-cream'] .tok-kw { color: #a626a4; }
+:root[data-theme='perplexity-cream'] .tok-str { color: #50a14f; }
+:root[data-theme='perplexity-cream'] .tok-com { color: #8e8e86; font-style: italic; }
+:root[data-theme='perplexity-cream'] .tok-num { color: #986801; }
+:root[data-theme='perplexity-cream'] .tok-bool { color: #986801; }
+:root[data-theme='perplexity-cream'] .tok-fn { color: #1F7B8C; }
+
+:root[data-theme='nothing'] .tok-kw,
+:root[data-theme='nothing'] .tok-str,
+:root[data-theme='nothing'] .tok-com,
+:root[data-theme='nothing'] .tok-num,
+:root[data-theme='nothing'] .tok-bool,
+:root[data-theme='nothing'] .tok-fn { color: #ffffff; }
+:root[data-theme='nothing'] .tok-com { color: #666666; }
+:root[data-theme='nothing'] .tok-kw { text-decoration: underline; }
+
+/* ============================================================
+   MISC
+   ============================================================ */
+
+textarea { field-sizing: content; }
+button { cursor: pointer; }
+::selection { background: var(--c-accent-soft); }
+input[type='checkbox'] { accent-color: var(--c-accent); }
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Safe area for mobile */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.safe-top { padding-top: env(safe-area-inset-top, 0px); }
+
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- React 18 (production UMD) -->
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+
+    <!-- Supabase JS SDK (v2, pinned UMD build) -->
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+
+    <!-- Application bundle: components, hooks, API streaming, file parsing, inline SVG icons -->
+    <script>
+(() => {
+  const React = window.React;
+  var __create = Object.create;
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __commonJS = (cb, mod) => function __require() {
+    try {
+      return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    } catch (e) {
+      throw mod = 0, e;
+    }
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
+
+  // g:react
+  var require_react = __commonJS({
+    "g:react"(exports, module) {
+      module.exports = window.React;
+    }
+  });
+
+  // g:react-dom/client
+  var require_client = __commonJS({
+    "g:react-dom/client"(exports, module) {
+      module.exports = window.ReactDOM;
+    }
+  });
+
+  // ../proj/RadiantAI_api_hub-main/src/main.tsx
+  var import_react13 = __toESM(require_react(), 1);
+  var import_client = __toESM(require_client(), 1);
+
+  // ../proj/RadiantAI_api_hub-main/src/App.tsx
+  var import_react12 = __toESM(require_react(), 1);
+
+  // ../proj/RadiantAI_api_hub-main/src/hooks/useSavedModels.tsx
+  var import_react = __toESM(require_react(), 1);
+  // ------------------------------------------------------------
+  // Supabase auth (Email + Google)
+  // ------------------------------------------------------------
+  var SUPABASE_URL = "https://ltkzemadewvsgqrvhcam.supabase.co";
+  var SUPABASE_ANON_KEY = "sb_publishable_SJ4WfyzDmrcdGFjhCi1F4A_Q2lIp2g2";
+  var sb = (() => {
+    try {
+      if (!window.supabase || typeof window.supabase.createClient !== "function") return null;
+      return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      });
+    } catch (e) {
+      console.error("Supabase init failed", e);
+      return null;
+    }
+  })();
+  function errMsg(e) {
+    return e && e.message ? e.message : String(e || "Unknown error");
+  }
+  function friendlyAuthError(message) {
+    const m = String(message || "");
+    if (/invalid login credentials/i.test(m)) return "Incorrect email or password.";
+    if (/email not confirmed/i.test(m)) return "Please confirm your email first \u2014 check your inbox.";
+    if (/already registered|already been registered/i.test(m)) return "This email is already registered. Try signing in instead.";
+    if (/rate limit|too many/i.test(m)) return "Too many attempts. Please wait a moment and try again.";
+    if (/password should be at least/i.test(m)) return "Password must be at least 6 characters.";
+    if (/valid email|invalid email|unable to validate email/i.test(m)) return "Please enter a valid email address.";
+    if (/failed to fetch|networkerror|network request failed/i.test(m)) return "Network error. Check your connection and try again.";
+    return m || "Something went wrong. Please try again.";
+  }
+  // Telegram Login Widget: replace with your bot's username (without the @).
+  var TELEGRAM_BOT_USERNAME = "radiant_hub_bot";
+  var TG_KEY = "radiant.tg-user";
+  var TG_PROFILE_KEY = "radiant.tg-profile";
+  function sanitizeTgUser(u) {
+    if (!u || typeof u !== "object") return null;
+    const id = Number(u.id);
+    if (!Number.isFinite(id) || id <= 0) return null;
+    const str = (v, n) => typeof v === "string" ? v.slice(0, n) : "";
+    const first = str(u.first_name, 64);
+    const username = str(u.username, 64);
+    if (!first && !username) return null;
+    const photo = typeof u.photo_url === "string" && /^https:\/\//i.test(u.photo_url) ? u.photo_url.slice(0, 500) : "";
+    return { id, first_name: first, last_name: str(u.last_name, 64), username, photo_url: photo };
+  }
+  function readTgProfile() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(TG_PROFILE_KEY) || "null");
+      const clean = sanitizeTgUser(parsed);
+      return clean && parsed && typeof parsed.userId === "string" ? { ...clean, userId: parsed.userId } : null;
+    } catch {
+      return null;
+    }
+  }
+  // Normalises a Supabase user (Email, Google or Telegram) into what the UI displays.
+  function userProfile(user, tgProfile) {
+    if (!user) return null;
+    const meta = user.user_metadata || {};
+    const tg = tgProfile && tgProfile.userId === user.id ? tgProfile : null;
+    const provider = user.app_metadata && user.app_metadata.provider;
+    const isTelegram = !!(tg || meta.provider === "telegram" || meta.telegram_id || meta.telegram_username || meta.telegram);
+    const tgName = tg ? [tg.first_name, tg.last_name].filter(Boolean).join(" ") : "";
+    const username = tg && tg.username || meta.telegram_username || (isTelegram ? meta.username : "") || "";
+    const name = meta.full_name || meta.name || tgName || "";
+    const primary = name || (isTelegram && username ? "@" + username : "") || user.email || "Signed in";
+    let secondary = "";
+    if (name) secondary = isTelegram ? username ? "@" + username : "" : user.email || "";
+    return {
+      primary,
+      secondary,
+      avatarUrl: meta.avatar_url || meta.picture || (tg ? tg.photo_url : "") || null,
+      providerLabel: isTelegram ? "Telegram" : provider === "google" ? "Google" : "Email",
+      isTelegram,
+      initial: String(primary).replace(/^@/, "").trim().charAt(0).toUpperCase() || "?"
+    };
+  }
+  var AuthContext = React.createContext(null);
+  function AuthProvider({ children }) {
+    const [session, setSession] = React.useState(null);
+    const [authReady, setAuthReady] = React.useState(!sb);
+    const [tgProfile, setTgProfile] = React.useState(() => readTgProfile());
+    const [telegramBusy, setTelegramBusy] = React.useState(false);
+    const [telegramError, setTelegramError] = React.useState("");
+    const sessionRef = React.useRef(null);
+    sessionRef.current = session;
+    React.useEffect(() => {
+      try {
+        localStorage.removeItem(TG_KEY);
+      } catch {
+      }
+      // Global callback for the Telegram Login Widget (data-onauth="onTelegramAuth(user)").
+      // Sends the signed Telegram payload to the `telegram-auth` Edge Function, which verifies it
+      // server-side and returns a one-time token_hash that is exchanged for a real Supabase session.
+      window.onTelegramAuth = async (user) => {
+        if (!sb) {
+          setTelegramError("Authentication service is unavailable.");
+          return;
+        }
+        setTelegramBusy(true);
+        setTelegramError("");
+        try {
+          const res = await fetch(`${SUPABASE_URL}/functions/v1/telegram-auth`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify(user)
+          });
+          let payload = null;
+          try {
+            payload = await res.json();
+          } catch {
+          }
+          if (res.status === 404) {
+            throw new Error("Telegram sign-in isn't set up on the server (Edge Function 'telegram-auth' not found).");
+          }
+          if (!res.ok || !payload || !payload.token_hash) {
+            throw new Error(payload && (payload.error || payload.message) || `Telegram sign-in failed (${res.status}).`);
+          }
+          const { data, error } = await sb.auth.verifyOtp({ token_hash: payload.token_hash, type: "magiclink" });
+          if (error) throw error;
+          const clean = sanitizeTgUser(user);
+          const uid = data && data.user ? data.user.id : data && data.session && data.session.user ? data.session.user.id : null;
+          if (clean && uid) {
+            const prof = { ...clean, userId: uid };
+            try {
+              localStorage.setItem(TG_PROFILE_KEY, JSON.stringify(prof));
+            } catch {
+            }
+            setTgProfile(prof);
+          }
+        } catch (e) {
+          setTelegramError(friendlyAuthError(errMsg(e)));
+        } finally {
+          setTelegramBusy(false);
+        }
+      };
+      return () => {
+        window.onTelegramAuth = void 0;
+      };
+    }, []);
+    const clearTelegramError = React.useCallback(() => setTelegramError(""), []);
+    React.useEffect(() => {
+      if (!sb) return;
+      let active = true;
+      sb.auth.getSession().then(({ data }) => {
+        if (!active) return;
+        setSession(data && data.session ? data.session : null);
+        setAuthReady(true);
+      }).catch(() => {
+        if (active) setAuthReady(true);
+      });
+      // Only set state inside the callback (no further Supabase calls) to avoid auth deadlocks.
+      const { data: listener } = sb.auth.onAuthStateChange((_event, s) => {
+        if (!active) return;
+        setSession(s || null);
+        setAuthReady(true);
+      });
+      return () => {
+        active = false;
+        listener.subscription.unsubscribe();
+      };
+    }, []);
+    const signInWithEmail = React.useCallback(async (email, password) => {
+      if (!sb) return { error: "Authentication service is unavailable." };
+      try {
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) return { error: friendlyAuthError(error.message) };
+        return {};
+      } catch (e) {
+        return { error: friendlyAuthError(errMsg(e)) };
+      }
+    }, []);
+    const signUpWithEmail = React.useCallback(async (email, password) => {
+      if (!sb) return { error: "Authentication service is unavailable." };
+      try {
+        const { data, error } = await sb.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: window.location.origin + window.location.pathname }
+        });
+        if (error) return { error: friendlyAuthError(error.message) };
+        if (data && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+          return { error: "This email is already registered. Try signing in instead." };
+        }
+        if (!data || !data.session) {
+          return { notice: "Account created! Check your inbox to confirm your email, then sign in." };
+        }
+        return {};
+      } catch (e) {
+        return { error: friendlyAuthError(errMsg(e)) };
+      }
+    }, []);
+    const signInWithGoogle = React.useCallback(async () => {
+      if (!sb) return { error: "Authentication service is unavailable." };
+      try {
+        const { error } = await sb.auth.signInWithOAuth({
+          provider: "google",
+          options: { redirectTo: window.location.origin + window.location.pathname }
+        });
+        if (error) return { error: friendlyAuthError(error.message) };
+        return {};
+      } catch (e) {
+        return { error: friendlyAuthError(errMsg(e)) };
+      }
+    }, []);
+    const signOut = React.useCallback(async () => {
+      try {
+        localStorage.removeItem(TG_PROFILE_KEY);
+      } catch {
+      }
+      setTgProfile(null);
+      if (!sb || !sessionRef.current) return {};
+      try {
+        const { error } = await sb.auth.signOut();
+        if (error) {
+          await sb.auth.signOut({ scope: "local" });
+        }
+        return {};
+      } catch (e) {
+        return { error: friendlyAuthError(errMsg(e)) };
+      }
+    }, []);
+    const value = React.useMemo(
+      () => ({
+        user: session ? session.user : null,
+        tgProfile,
+        telegramBusy,
+        telegramError,
+        clearTelegramError,
+        signedIn: !!session,
+        session,
+        authReady,
+        available: !!sb,
+        signInWithEmail,
+        signUpWithEmail,
+        signInWithGoogle,
+        signOut
+      }),
+      [session, tgProfile, telegramBusy, telegramError, clearTelegramError, authReady, signInWithEmail, signUpWithEmail, signInWithGoogle, signOut]
+    );
+    return React.createElement(AuthContext.Provider, { value }, children);
+  }
+  function useAuth() {
+    const ctx = React.useContext(AuthContext);
+    if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+    return ctx;
+  }
+  var STORAGE_KEY = "radiant.saved-models";
+  var ACTIVE_KEY = "radiant.active-model";
+  function read() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+  function write(models) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(models));
+    } catch {
+    }
+  }
+  var SavedModelsContext = (0, import_react.createContext)(null);
+  var MAX_KEYS = 10;
+  function uid() {
+    return `m-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  }
+  function mergeKeys(primary, secondary) {
+    const seen = /* @__PURE__ */ new Set();
+    const out = [];
+    for (const m of [...primary, ...secondary]) {
+      if (!m || typeof m !== "object" || !m.apiKey) continue;
+      const fp = `${m.provider}|${m.modelId}|${m.apiKey}`;
+      if (seen.has(fp)) continue;
+      seen.add(fp);
+      out.push(m.id ? m : { ...m, id: uid() });
+      if (out.length >= MAX_KEYS) break;
+    }
+    return out;
+  }
+  async function cloudLoad(userId) {
+    const { data, error } = await sb.from("user_settings").select("api_keys").eq("user_id", userId).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+  async function cloudSave(userId, keys) {
+    const { error } = await sb.from("user_settings").upsert({ user_id: userId, api_keys: keys }, { onConflict: "user_id" });
+    if (error) throw error;
+  }
+  function SavedModelsProvider({ children }) {
+    const { user, authReady } = useAuth();
+    const userId = user ? user.id : null;
+    const [models, setModels] = (0, import_react.useState)(() => typeof window === "undefined" ? [] : read());
+    const [activeModelId, setActiveId] = (0, import_react.useState)(() => {
+      if (typeof window === "undefined") return null;
+      return localStorage.getItem(ACTIVE_KEY) || read()[0]?.id || null;
+    });
+    const [syncStatus, setSyncStatus] = (0, import_react.useState)("idle");
+    const [syncError, setSyncError] = (0, import_react.useState)("");
+    const [syncTick, setSyncTick] = (0, import_react.useState)(0);
+    const modelsRef = (0, import_react.useRef)(models);
+    const cloudReadyRef = (0, import_react.useRef)(false);
+    const userIdRef = (0, import_react.useRef)(userId);
+    const saveChainRef = (0, import_react.useRef)(Promise.resolve());
+    userIdRef.current = userId;
+    (0, import_react.useEffect)(() => {
+      try {
+        localStorage.setItem(ACTIVE_KEY, activeModelId || "");
+      } catch {
+      }
+    }, [activeModelId]);
+    const persist = (0, import_react.useCallback)((next) => {
+      const uidNow = userIdRef.current;
+      if (uidNow && cloudReadyRef.current) {
+        setSyncStatus("syncing");
+        saveChainRef.current = saveChainRef.current.then(() => cloudSave(uidNow, next)).then(() => {
+          if (userIdRef.current === uidNow) {
+            setSyncStatus("synced");
+            setSyncError("");
+          }
+        }).catch((e) => {
+          write(next);
+          if (userIdRef.current === uidNow) {
+            setSyncStatus("error");
+            setSyncError(errMsg(e));
+          }
+        });
+      } else {
+        write(next);
+      }
+    }, []);
+    (0, import_react.useEffect)(() => {
+      if (!authReady) return;
+      let cancelled = false;
+      cloudReadyRef.current = false;
+      if (!userId) {
+        const local = read();
+        modelsRef.current = local;
+        setModels(local);
+        setSyncStatus("idle");
+        setSyncError("");
+        return;
+      }
+      setSyncStatus("syncing");
+      setSyncError("");
+      (async () => {
+        try {
+          const row = await cloudLoad(userId);
+          if (cancelled) return;
+          const remote = Array.isArray(row && row.api_keys) ? row.api_keys : [];
+          const merged = mergeKeys(remote, read());
+          modelsRef.current = merged;
+          setModels(merged);
+          if (!row || merged.length !== remote.length) {
+            await cloudSave(userId, merged);
+            if (cancelled) return;
+          }
+          cloudReadyRef.current = true;
+          setSyncStatus("synced");
+        } catch (e) {
+          if (cancelled) return;
+          console.error("Cloud sync failed", e);
+          setSyncStatus("error");
+          setSyncError(errMsg(e));
+        }
+      })();
+      return () => {
+        cancelled = true;
+      };
+    }, [userId, authReady, syncTick]);
+    const retrySync = (0, import_react.useCallback)(() => setSyncTick((t) => t + 1), []);
+    const addModel = (0, import_react.useCallback)((model) => {
+      const cur = modelsRef.current;
+      if (cur.length >= MAX_KEYS) return null;
+      const id = uid();
+      const saved = { ...model, id, createdAt: Date.now() };
+      const next = [...cur, saved];
+      modelsRef.current = next;
+      setModels(next);
+      persist(next);
+      setActiveId(id);
+      return id;
+    }, [persist]);
+    const removeModel = (0, import_react.useCallback)((id) => {
+      const next = modelsRef.current.filter((m) => m.id !== id);
+      modelsRef.current = next;
+      setModels(next);
+      persist(next);
+      setActiveId((curr) => curr === id ? null : curr);
+    }, [persist]);
+    const setActiveModelId = (0, import_react.useCallback)((id) => setActiveId(id), []);
+    const activeModel = models.find((m) => m.id === activeModelId) || null;
+    (0, import_react.useEffect)(() => {
+      if ((!activeModelId || !models.some((m) => m.id === activeModelId)) && models.length > 0) {
+        setActiveId(models[0].id);
+      }
+    }, [activeModelId, models]);
+    return /* @__PURE__ */ React.createElement(
+      SavedModelsContext.Provider,
+      {
+        value: {
+          models,
+          activeModelId,
+          activeModel,
+          addModel,
+          removeModel,
+          setActiveModelId,
+          maxKeys: MAX_KEYS,
+          atLimit: models.length >= MAX_KEYS,
+          syncStatus,
+          syncError,
+          retrySync
+        }
+      },
+      children
+    );
+  }
+  function useSavedModels() {
+    const ctx = (0, import_react.useContext)(SavedModelsContext);
+    if (!ctx) throw new Error("useSavedModels must be used within SavedModelsProvider");
+    return ctx;
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/hooks/useConversations.tsx
+  var import_react2 = __toESM(require_react(), 1);
+  var STORAGE_KEY2 = "radiant.conversations";
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY2);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+  function uid2() {
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  }
+  var ConversationsContext = (0, import_react2.createContext)(null);
+  var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  function newChatId() {
+    try {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") return window.crypto.randomUUID();
+    } catch {
+    }
+    const b = new Uint8Array(16);
+    try {
+      window.crypto.getRandomValues(b);
+    } catch {
+      for (let i = 0; i < 16; i++) b[i] = Math.floor(Math.random() * 256);
+    }
+    b[6] = b[6] & 15 | 64;
+    b[8] = b[8] & 63 | 128;
+    const hex = Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  }
+  function slimMessages(msgs) {
+    return (msgs || []).map((m) => {
+      const s = { ...m };
+      if (s.streaming) s.streaming = false;
+      if (Array.isArray(s.attachments)) {
+        s.attachments = s.attachments.map((a) => {
+          const { dataUrl, ...rest } = a;
+          return rest;
+        });
+      }
+      return s;
+    });
+  }
+  function chatToRow(userId, c) {
+    return {
+      id: c.id,
+      user_id: userId,
+      title: c.title,
+      messages: slimMessages(c.messages),
+      updated_at: new Date(c.updatedAt || Date.now()).toISOString()
+    };
+  }
+  function rowToChat(r) {
+    let msgs = r.messages;
+    if (msgs && !Array.isArray(msgs) && Array.isArray(msgs.messages)) msgs = msgs.messages;
+    if (!Array.isArray(msgs)) msgs = [];
+    const t = Date.parse(r.updated_at);
+    return {
+      id: String(r.id),
+      title: typeof r.title === "string" && r.title ? r.title : "\u041d\u043e\u0432\u044b\u0439 \u0447\u0430\u0442",
+      messages: msgs,
+      updatedAt: Number.isFinite(t) ? t : Date.now()
+    };
+  }
+  async function cloudLoadChats(userId) {
+    const { data, error } = await sb.from("user_chats").select("id,title,messages,updated_at").eq("user_id", userId).order("updated_at", { ascending: false }).limit(500);
+    if (error) throw error;
+    return (data || []).map(rowToChat);
+  }
+  function ConversationsProvider({ children }) {
+    const { user, authReady } = useAuth();
+    const userId = user ? user.id : null;
+    const [conversations, setConversations] = (0, import_react2.useState)(() => load());
+    const [activeId, setActiveId] = (0, import_react2.useState)(() => load()[0]?.id || null);
+    const [chatSyncStatus, setChatSyncStatus] = (0, import_react2.useState)("idle");
+    const [chatSyncError, setChatSyncError] = (0, import_react2.useState)("");
+    const [syncTick, setSyncTick] = (0, import_react2.useState)(0);
+    const convRef = (0, import_react2.useRef)(conversations);
+    const userIdRef = (0, import_react2.useRef)(userId);
+    const modeRef = (0, import_react2.useRef)("local");
+    const cloudReadyRef = (0, import_react2.useRef)(false);
+    const dirtyRef = (0, import_react2.useRef)(/* @__PURE__ */ new Set());
+    const deletedRef = (0, import_react2.useRef)(/* @__PURE__ */ new Set());
+    const timerRef = (0, import_react2.useRef)(null);
+    const chainRef = (0, import_react2.useRef)(Promise.resolve());
+    userIdRef.current = userId;
+    const doFlush = (0, import_react2.useCallback)(async () => {
+      const uidNow = userIdRef.current;
+      if (!uidNow || !cloudReadyRef.current || !sb) return;
+      const ids = [...dirtyRef.current];
+      const dels = [...deletedRef.current];
+      if (!ids.length && !dels.length) return;
+      dirtyRef.current.clear();
+      deletedRef.current.clear();
+      const byId = new Map(convRef.current.map((c) => [c.id, c]));
+      const rows = ids.map((id) => byId.get(id)).filter(Boolean).map((c) => chatToRow(uidNow, c));
+      setChatSyncStatus("syncing");
+      try {
+        if (rows.length) {
+          const { error } = await sb.from("user_chats").upsert(rows, { onConflict: "id" });
+          if (error) throw error;
+        }
+        if (dels.length) {
+          const { error } = await sb.from("user_chats").delete().eq("user_id", uidNow).in("id", dels);
+          if (error) throw error;
+        }
+        if (userIdRef.current === uidNow) {
+          setChatSyncStatus("synced");
+          setChatSyncError("");
+        }
+      } catch (e) {
+        ids.forEach((id) => dirtyRef.current.add(id));
+        dels.forEach((id) => deletedRef.current.add(id));
+        if (userIdRef.current === uidNow) {
+          setChatSyncStatus("error");
+          setChatSyncError(errMsg(e));
+        }
+      }
+    }, []);
+    const enqueueFlush = (0, import_react2.useCallback)(() => {
+      chainRef.current = chainRef.current.then(doFlush);
+      return chainRef.current;
+    }, [doFlush]);
+    const scheduleFlush = (0, import_react2.useCallback)((delay = 1500) => {
+      clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        enqueueFlush();
+      }, delay);
+    }, [enqueueFlush]);
+    const flushChats = (0, import_react2.useCallback)(() => {
+      clearTimeout(timerRef.current);
+      return enqueueFlush();
+    }, [enqueueFlush]);
+    const apply = (0, import_react2.useCallback)((fn) => {
+      const prev = convRef.current;
+      const next = fn(prev);
+      if (next === prev) return;
+      convRef.current = next;
+      setConversations(next);
+      if (userIdRef.current && cloudReadyRef.current) {
+        const prevMap = new Map(prev.map((c) => [c.id, c]));
+        const nextIds = /* @__PURE__ */ new Set();
+        for (const c of next) {
+          nextIds.add(c.id);
+          if (prevMap.get(c.id) !== c) dirtyRef.current.add(c.id);
+        }
+        for (const c of prev) {
+          if (!nextIds.has(c.id)) {
+            dirtyRef.current.delete(c.id);
+            deletedRef.current.add(c.id);
+          }
+        }
+        scheduleFlush();
+      } else {
+        try {
+          localStorage.setItem(STORAGE_KEY2, JSON.stringify(next));
+        } catch {
+        }
+      }
+    }, [scheduleFlush]);
+    (0, import_react2.useEffect)(() => {
+      if (!authReady) return;
+      let cancelled = false;
+      cloudReadyRef.current = false;
+      clearTimeout(timerRef.current);
+      dirtyRef.current.clear();
+      deletedRef.current.clear();
+      if (!userId) {
+        if (modeRef.current === "cloud") {
+          const local = load();
+          convRef.current = local;
+          setConversations(local);
+          setActiveId(local[0]?.id || null);
+        }
+        modeRef.current = "local";
+        setChatSyncStatus("idle");
+        setChatSyncError("");
+        return;
+      }
+      setChatSyncStatus("syncing");
+      setChatSyncError("");
+      (async () => {
+        try {
+          const remote = await cloudLoadChats(userId);
+          if (cancelled) return;
+          const local = load();
+          const remoteById = new Map(remote.map((c) => [c.id, c]));
+          const idMap = /* @__PURE__ */ new Map();
+          const toUpload = [];
+          const out = [...remote];
+          for (const lc of local) {
+            let c = lc;
+            if (!UUID_RE.test(c.id)) {
+              const nid = newChatId();
+              idMap.set(c.id, nid);
+              c = { ...c, id: nid };
+            }
+            const rc = remoteById.get(c.id);
+            if (!rc) {
+              out.push(c);
+              toUpload.push(c.id);
+            } else if ((c.updatedAt || 0) > rc.updatedAt) {
+              out[out.indexOf(rc)] = c;
+              toUpload.push(c.id);
+            }
+          }
+          out.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+          convRef.current = out;
+          setConversations(out);
+          setActiveId((curr) => {
+            const mapped = idMap.get(curr) || curr;
+            return out.some((c) => c.id === mapped) ? mapped : out[0]?.id || null;
+          });
+          toUpload.forEach((id) => dirtyRef.current.add(id));
+          modeRef.current = "cloud";
+          cloudReadyRef.current = true;
+          if (toUpload.length) {
+            await enqueueFlush();
+          } else {
+            setChatSyncStatus("synced");
+          }
+        } catch (e) {
+          if (cancelled) return;
+          console.error("Chat sync failed", e);
+          setChatSyncStatus("error");
+          setChatSyncError(errMsg(e));
+        }
+      })();
+      return () => {
+        cancelled = true;
+      };
+    }, [userId, authReady, syncTick, enqueueFlush]);
+    (0, import_react2.useEffect)(() => {
+      const onHide = () => {
+        if (document.visibilityState === "hidden") flushChats();
+      };
+      const onOnline = () => {
+        if (cloudReadyRef.current) scheduleFlush(300);
+      };
+      const onPageHide = () => {
+        flushChats();
+      };
+      document.addEventListener("visibilitychange", onHide);
+      window.addEventListener("pagehide", onPageHide);
+      window.addEventListener("online", onOnline);
+      return () => {
+        document.removeEventListener("visibilitychange", onHide);
+        window.removeEventListener("pagehide", onPageHide);
+        window.removeEventListener("online", onOnline);
+      };
+    }, [flushChats, scheduleFlush]);
+    const retryChatSync = (0, import_react2.useCallback)(() => {
+      if (cloudReadyRef.current) {
+        flushChats();
+      } else {
+        setSyncTick((t) => t + 1);
+      }
+    }, [flushChats]);
+    const setActive = (0, import_react2.useCallback)((id) => setActiveId(id), []);
+    const createConversation = (0, import_react2.useCallback)(
+      (title, msgs, modelId) => {
+        const id = newChatId();
+        const conv = {
+          id,
+          title: title.slice(0, 50),
+          messages: msgs,
+          modelId,
+          updatedAt: Date.now()
+        };
+        apply((prev) => [conv, ...prev]);
+        setActiveId(id);
+        return id;
+      },
+      [apply]
+    );
+    const appendMessages = (0, import_react2.useCallback)((convId, msgs) => {
+      apply(
+        (prev) => prev.map(
+          (c) => c.id === convId ? { ...c, messages: [...c.messages, ...msgs], updatedAt: Date.now() } : c
+        )
+      );
+    }, [apply]);
+    const updateMessage = (0, import_react2.useCallback)((convId, msgId, patch) => {
+      apply(
+        (prev) => prev.map(
+          (c) => c.id === convId ? { ...c, messages: c.messages.map((m) => m.id === msgId ? { ...m, ...patch } : m), updatedAt: Date.now() } : c
+        )
+      );
+    }, [apply]);
+    const deleteConversation = (0, import_react2.useCallback)((id) => {
+      apply((prev) => prev.filter((c) => c.id !== id));
+      setActiveId((curr) => curr === id ? null : curr);
+    }, [apply]);
+    const activeConversation = conversations.find((c) => c.id === activeId) || null;
+    return /* @__PURE__ */ React.createElement(
+      ConversationsContext.Provider,
+      {
+        value: {
+          conversations,
+          activeId,
+          activeConversation,
+          setActiveId: setActive,
+          createConversation,
+          appendMessages,
+          updateMessage,
+          deleteConversation,
+          chatCloud: !!userId && authReady,
+          chatSyncStatus,
+          chatSyncError,
+          retryChatSync,
+          flushChats
+        }
+      },
+      children
+    );
+  }
+  function useConversations() {
+    const ctx = (0, import_react2.useContext)(ConversationsContext);
+    if (!ctx) throw new Error("useConversations must be used within ConversationsProvider");
+    return ctx;
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/hooks/useTheme.ts
+  var import_react3 = __toESM(require_react(), 1);
+
+  // lucide-shim.js
+  var ICONS = {
+    "Moon": '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>',
+    "Sun": '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>',
+    "Grid3x3": '<rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path>',
+    "Coffee": '<path d="M10 2v2"></path><path d="M14 2v2"></path><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"></path><path d="M6 2v2"></path>',
+    "Check": '<path d="M20 6 9 17l-5-5"></path>',
+    "X": '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
+    "KeyRound": '<path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>',
+    "Plus": '<path d="M5 12h14"></path><path d="M12 5v14"></path>',
+    "Clock": '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
+    "MessageSquare": '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>',
+    "User": '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>',
+    "Settings": '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle>',
+    "Trash2": '<path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line>',
+    "Search": '<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>',
+    "ArrowLeft": '<path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path>',
+    "ChevronDown": '<path d="m6 9 6 6 6-6"></path>',
+    "ChevronUp": '<path d="m18 15-6-6-6 6"></path>',
+    "Eye": '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle>',
+    "EyeOff": '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"></path><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"></path><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"></path><path d="m2 2 20 20"></path>',
+    "ExternalLink": '<path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>',
+    "Sparkles": '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path>',
+    "Copy": '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>',
+    "ArrowDown": '<path d="M12 5v14"></path><path d="m19 12-7 7-7-7"></path>',
+    "ArrowUp": '<path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path>',
+    "AlertTriangle": '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path>',
+    "FileText": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path>',
+    "FileCode2": '<path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="m5 12-3 3 3 3"></path><path d="m9 18 3-3-3-3"></path>',
+    "Braces": '<path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"></path><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"></path>',
+    "File": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path>',
+    "Music": '<path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle>',
+    "Video": '<path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect>',
+    "Camera": '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle>',
+    "Mic": '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line>',
+    "Paperclip": '<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>',
+    "Square": '<rect width="18" height="18" x="3" y="3" rx="2"></rect>',
+    "GitCompare": '<circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><path d="M11 18H8a2 2 0 0 1-2-2V9"></path>',
+    "LineChart": '<path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="m19 9-5 5-4-4-3 3"></path>',
+    "Wrench": '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>',
+    "Code2": '<path d="m18 16 4-4-4-4"></path><path d="m6 8-4 4 4 4"></path><path d="m14.5 4-5 16"></path>',
+    "Lightbulb": '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path>',
+    "PenLine": '<path d="M12 20h9"></path><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"></path>',
+    "Languages": '<path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path>'
+  };
+  function makeIcon(name, cls) {
+    return function Icon({ size = 24, className = "", style, strokeWidth = 2, color = "currentColor" }) {
+      return React.createElement("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        width: size,
+        height: size,
+        viewBox: "0 0 24 24",
+        fill: "none",
+        stroke: color,
+        strokeWidth,
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        className: ("lucide lucide-" + cls + " " + className).trim(),
+        style,
+        "aria-hidden": "true",
+        dangerouslySetInnerHTML: { __html: ICONS[name] }
+      });
+    };
+  }
+  var Moon = makeIcon("Moon", "moon");
+  var Sun = makeIcon("Sun", "sun");
+  var Grid3x3 = makeIcon("Grid3x3", "grid-3x-3");
+  var Coffee = makeIcon("Coffee", "coffee");
+  var Check = makeIcon("Check", "check");
+  var X = makeIcon("X", "x");
+  var KeyRound = makeIcon("KeyRound", "key-round");
+  var Plus = makeIcon("Plus", "plus");
+  var Clock = makeIcon("Clock", "clock");
+  var MessageSquare = makeIcon("MessageSquare", "message-square");
+  var User = makeIcon("User", "user");
+  ICONS["LogOut"] = '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line>';
+  ICONS["Mail"] = '<rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>';
+  ICONS["Lock"] = '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>';
+  ICONS["RefreshCw"] = '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path>';
+  ICONS["Cloud"] = '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>';
+  var LogOut = makeIcon("LogOut", "log-out");
+  var Mail = makeIcon("Mail", "mail");
+  var Lock = makeIcon("Lock", "lock");
+  var RefreshCw = makeIcon("RefreshCw", "refresh-cw");
+  var Cloud = makeIcon("Cloud", "cloud");
+  var Settings = makeIcon("Settings", "settings");
+  var Trash2 = makeIcon("Trash2", "trash-2");
+  var Search = makeIcon("Search", "search");
+  var ArrowLeft = makeIcon("ArrowLeft", "arrow-left");
+  var ChevronDown = makeIcon("ChevronDown", "chevron-down");
+  var ChevronUp = makeIcon("ChevronUp", "chevron-up");
+  var Eye = makeIcon("Eye", "eye");
+  var EyeOff = makeIcon("EyeOff", "eye-off");
+  var ExternalLink = makeIcon("ExternalLink", "external-link");
+  var Sparkles = makeIcon("Sparkles", "sparkles");
+  var Copy = makeIcon("Copy", "copy");
+  var ArrowDown = makeIcon("ArrowDown", "arrow-down");
+  var ArrowUp = makeIcon("ArrowUp", "arrow-up");
+  var AlertTriangle = makeIcon("AlertTriangle", "alert-triangle");
+  var FileText = makeIcon("FileText", "file-text");
+  var FileCode2 = makeIcon("FileCode2", "file-code-2");
+  var Braces = makeIcon("Braces", "braces");
+  var File = makeIcon("File", "file");
+  var Music = makeIcon("Music", "music");
+  var Video = makeIcon("Video", "video");
+  var Camera = makeIcon("Camera", "camera");
+  var Mic = makeIcon("Mic", "mic");
+  var Paperclip = makeIcon("Paperclip", "paperclip");
+  var Square = makeIcon("Square", "square");
+  var GitCompare = makeIcon("GitCompare", "git-compare");
+  var LineChart = makeIcon("LineChart", "line-chart");
+  var Wrench = makeIcon("Wrench", "wrench");
+  var Code2 = makeIcon("Code2", "code-2");
+  var Lightbulb = makeIcon("Lightbulb", "lightbulb");
+  var PenLine = makeIcon("PenLine", "pen-line");
+  var Languages = makeIcon("Languages", "languages");
+
+  // ../proj/RadiantAI_api_hub-main/src/types/theme.ts
+  var THEMES = [
+    {
+      id: "classic-dark",
+      label: "Dark Mode",
+      family: "classic",
+      icon: Moon,
+      swatch: { bg: "#0a0b0f", surface: "#131419", accent: "#5b8def", border: "#26282f" },
+      description: "Perplexity & Linear inspired"
+    },
+    {
+      id: "perplexity-cream",
+      label: "Light (Perplexity Cream)",
+      family: "classic",
+      icon: Coffee,
+      swatch: { bg: "#F9F9F8", surface: "#EFEFEA", accent: "#1F7B8C", border: "#D8D8D2" },
+      description: "Warm cream with teal accent"
+    },
+    {
+      id: "classic-light",
+      label: "Classic Light",
+      family: "classic",
+      icon: Sun,
+      swatch: { bg: "#f7f8fa", surface: "#ffffff", accent: "#4f7ce8", border: "#e3e5ea" },
+      description: "Clean & bright"
+    },
+    {
+      id: "nothing",
+      label: "Nothing Style",
+      family: "nothing",
+      icon: Grid3x3,
+      swatch: { bg: "#000000", surface: "#0a0a0a", accent: "#ffffff", border: "#2a2a2a" },
+      description: "Dot-matrix monochrome"
+    }
+  ];
+  var DEFAULT_THEME = "classic-dark";
+
+  // ../proj/RadiantAI_api_hub-main/src/hooks/useTheme.ts
+  var STORAGE_KEY3 = "radiant.theme";
+  function useTheme() {
+    const [theme, setTheme] = (0, import_react3.useState)(() => {
+      if (typeof window === "undefined") return DEFAULT_THEME;
+      return localStorage.getItem(STORAGE_KEY3) || DEFAULT_THEME;
+    });
+    (0, import_react3.useEffect)(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+      try {
+        localStorage.setItem(STORAGE_KEY3, theme);
+      } catch {
+      }
+    }, [theme]);
+    const toggleTheme = (0, import_react3.useCallback)((t) => setTheme(t), []);
+    return { theme, setTheme: toggleTheme };
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/components/RadiantLogo.tsx
+  var sizes = {
+    sm: { mark: "h-7 w-7", title: "text-sm", subtitle: "text-[9px]" },
+    md: { mark: "h-9 w-9", title: "text-base", subtitle: "text-[10px]" },
+    lg: { mark: "h-14 w-14", title: "text-2xl", subtitle: "text-xs" }
+  };
+  function RadiantLogo({ size = "md", showName = true, className = "" }) {
+    const scale = sizes[size];
+    if (!showName) return null;
+    return /* @__PURE__ */ React.createElement("div", { className: `flex min-w-0 flex-col items-center text-center leading-none ${className}` }, /* @__PURE__ */ React.createElement("div", { className: `font-display font-semibold tracking-[-0.04em] ${scale.title}` }, "Radiant"), /* @__PURE__ */ React.createElement("div", { className: `mt-1 text-muted ${scale.subtitle}` }, "by Aetheris AI"));
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/components/Header.tsx
+  function Header({ activeTab, onTabChange, onOpenSettings, onOpenProfile }) {
+    const { user, tgProfile, signedIn } = useAuth();
+    const prof = userProfile(user, tgProfile);
+    const avatarUrl = prof && prof.avatarUrl || "";
+    const profileTitle = prof ? prof.primary : "Sign in";
+    return /* @__PURE__ */ React.createElement("header", { className: "safe-top relative z-10 px-4 pt-3 pb-2" }, /* @__PURE__ */ React.createElement("div", { className: "relative flex h-10 items-center justify-between" }, /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: onOpenProfile,
+        className: `relative flex h-9 w-9 items-center justify-center rounded-full border bg-surface transition-colors hover:text-text ${signedIn ? "border-green-500 text-text" : "border-border text-muted hover:border-accent/50"}`,
+        "aria-label": signedIn ? "Profile (signed in)" : "Profile & Sign in",
+        title: profileTitle
+      },
+      /* @__PURE__ */ React.createElement("span", { className: "flex h-full w-full items-center justify-center overflow-hidden rounded-full" }, avatarUrl ? /* @__PURE__ */ React.createElement(Avatar, { url: avatarUrl, className: "h-full w-full", fallback: /* @__PURE__ */ React.createElement(User, { size: 18 }) }) : /* @__PURE__ */ React.createElement(User, { size: 18 })),
+      signedIn && /* @__PURE__ */ React.createElement("span", { className: "absolute -right-0.5 -top-0.5 block h-3 w-3 rounded-full bg-green-500 ring-2 ring-bg", "aria-hidden": "true" })
+    ), /* @__PURE__ */ React.createElement("div", { className: "absolute left-1/2 -translate-x-1/2" }, /* @__PURE__ */ React.createElement(RadiantLogo, { size: "md" })), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: onOpenSettings,
+        className: "flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-muted transition-colors hover:border-accent/50 hover:text-text",
+        "aria-label": "Settings"
+      },
+      /* @__PURE__ */ React.createElement(Settings, { size: 18 })
+    )), /* @__PURE__ */ React.createElement("div", { className: "mt-2 flex justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center rounded-full border border-border bg-surface/85 p-0.5 shadow-theme backdrop-blur-sm" }, /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: () => onTabChange("history"),
+        className: `flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${activeTab === "history" ? "bg-surface-2 text-text" : "text-muted hover:text-text"}`
+      },
+      /* @__PURE__ */ React.createElement(Clock, { size: 15 }),
+      /* @__PURE__ */ React.createElement("span", { className: "hidden xs:inline" }, "История")
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: () => onTabChange("chat"),
+        className: `flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${activeTab === "chat" ? "bg-surface-2 text-text" : "text-muted hover:text-text"}`
+      },
+      /* @__PURE__ */ React.createElement(MessageSquare, { size: 15 }),
+      /* @__PURE__ */ React.createElement("span", { className: "hidden xs:inline" }, "Чат")
+    ))));
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/ChatPanel.tsx
+  var import_react10 = __toESM(require_react(), 1);
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/ChatInput.tsx
+  var import_react4 = __toESM(require_react(), 1);
+
+  // ../proj/RadiantAI_api_hub-main/src/types/models.ts
+  var PROVIDERS = [
+    {
+      id: "openai",
+      label: "OpenAI",
+      docsUrl: "https://platform.openai.com/api-keys",
+      keyPrefixes: ["sk-proj-", "sk-"],
+      placeholder: "sk-... or sk-proj-...",
+      color: "#10a37f"
+    },
+    {
+      id: "anthropic",
+      label: "Anthropic",
+      docsUrl: "https://console.anthropic.com/settings/keys",
+      keyPrefixes: ["sk-ant-"],
+      placeholder: "sk-ant-...",
+      color: "#d4a27f"
+    },
+    {
+      id: "perplexity",
+      label: "Perplexity",
+      docsUrl: "https://www.perplexity.ai/settings/api",
+      keyPrefixes: ["pplx-"],
+      placeholder: "pplx-...",
+      color: "#20808e"
+    },
+    {
+      id: "kimi",
+      label: "Kimi (Moonshot)",
+      docsUrl: "https://platform.moonshot.cn/console/api-keys",
+      keyPrefixes: ["sk-"],
+      placeholder: "sk-...",
+      color: "#5b5bd6",
+      ambiguous: true
+    },
+    {
+      id: "deepseek",
+      label: "DeepSeek",
+      docsUrl: "https://platform.deepseek.com/api_keys",
+      keyPrefixes: ["sk-"],
+      placeholder: "sk-...",
+      color: "#4d6bfe",
+      ambiguous: true
+    },
+    {
+      id: "gemini",
+      label: "Google Gemini",
+      docsUrl: "https://aistudio.google.com/app/apikey",
+      keyPrefixes: ["AIza"],
+      placeholder: "AIza...",
+      color: "#4285f4"
+    },
+    {
+      id: "groq",
+      label: "Groq",
+      docsUrl: "https://console.groq.com/keys",
+      keyPrefixes: ["gsk_"],
+      placeholder: "gsk_...",
+      color: "#f55036"
+    },
+    {
+      id: "mistral",
+      label: "Mistral AI",
+      docsUrl: "https://console.mistral.ai/api-keys",
+      keyPrefixes: ["mistral-"],
+      placeholder: "mistral-...",
+      color: "#ff7000"
+    },
+    {
+      id: "openrouter",
+      label: "OpenRouter",
+      docsUrl: "https://openrouter.ai/keys",
+      keyPrefixes: ["sk-or-"],
+      placeholder: "sk-or-...",
+      color: "#8a3ffc"
+    }
+  ];
+  var PROVIDER_MODELS = {
+    openai: [
+      { id: "gpt-4o", label: "GPT-4o", provider: "openai", apiName: "gpt-4o" },
+      { id: "gpt-4o-mini", label: "GPT-4o mini", provider: "openai", apiName: "gpt-4o-mini" },
+      { id: "o1", label: "o1", provider: "openai", apiName: "o1" },
+      { id: "o3-mini", label: "o3-mini", provider: "openai", apiName: "o3-mini" }
+    ],
+    anthropic: [
+      { id: "claude-3-5-sonnet", label: "Claude 3.5 Sonnet", provider: "anthropic", apiName: "claude-3-5-sonnet-20241022" },
+      { id: "claude-3-5-haiku", label: "Claude 3.5 Haiku", provider: "anthropic", apiName: "claude-3-5-haiku-20241022" },
+      { id: "claude-3-opus", label: "Claude 3 Opus", provider: "anthropic", apiName: "claude-3-opus-20240229" }
+    ],
+    perplexity: [
+      { id: "sonar", label: "Sonar", provider: "perplexity", apiName: "sonar" },
+      { id: "sonar-pro", label: "Sonar Pro", provider: "perplexity", apiName: "sonar-pro" },
+      { id: "sonar-reasoning", label: "Sonar Reasoning", provider: "perplexity", apiName: "sonar-reasoning" }
+    ],
+    kimi: [
+      { id: "kimi-latest", label: "Kimi Latest", provider: "kimi", apiName: "kimi-latest" },
+      { id: "moonshot-v1-8k", label: "Moonshot v1 8K", provider: "kimi", apiName: "moonshot-v1-8k" },
+      { id: "moonshot-v1-32k", label: "Moonshot v1 32K", provider: "kimi", apiName: "moonshot-v1-32k" },
+      { id: "moonshot-v1-128k", label: "Moonshot v1 128K", provider: "kimi", apiName: "moonshot-v1-128k" }
+    ],
+    deepseek: [
+      { id: "deepseek-chat", label: "DeepSeek V3 (Chat)", provider: "deepseek", apiName: "deepseek-chat" },
+      { id: "deepseek-reasoner", label: "DeepSeek R1 (Reasoner)", provider: "deepseek", apiName: "deepseek-reasoner" }
+    ],
+    gemini: [
+      { id: "gemini-2.0-flash", label: "Gemini 2.0 Flash", provider: "gemini", apiName: "gemini-2.0-flash" },
+      { id: "gemini-1.5-pro", label: "Gemini 1.5 Pro", provider: "gemini", apiName: "gemini-1.5-pro" }
+    ],
+    groq: [
+      { id: "llama-3.3-70b-versatile", label: "Llama 3.3 70B", provider: "groq", apiName: "llama-3.3-70b-versatile" },
+      { id: "deepseek-r1-distill-llama-70b", label: "DeepSeek R1 Distill 70B", provider: "groq", apiName: "deepseek-r1-distill-llama-70b" }
+    ],
+    mistral: [
+      { id: "mistral-large-latest", label: "Mistral Large", provider: "mistral", apiName: "mistral-large-latest" },
+      { id: "codestral-latest", label: "Codestral", provider: "mistral", apiName: "codestral-latest" }
+    ],
+    openrouter: [
+      { id: "or-auto", label: "Auto / Best", provider: "openrouter", apiName: "auto" },
+      { id: "or-claude-3.5-sonnet", label: "Claude 3.5 Sonnet", provider: "openrouter", apiName: "anthropic/claude-3.5-sonnet" },
+      { id: "or-deepseek-r1", label: "DeepSeek R1", provider: "openrouter", apiName: "deepseek/deepseek-r1" }
+    ]
+  };
+  function getProvider(id) {
+    return PROVIDERS.find((p) => p.id === id) || PROVIDERS[0];
+  }
+  function detectProviders(key) {
+    const trimmed = key.trim();
+    if (!trimmed) return [];
+    const matches = [];
+    for (const p of PROVIDERS) {
+      if (p.keyPrefixes.some((prefix) => trimmed.startsWith(prefix))) {
+        matches.push(p.id);
+      }
+    }
+    return matches;
+  }
+  function detectProviderWithAmbiguity(key) {
+    const matches = detectProviders(key);
+    if (matches.length === 0) return { provider: null, candidates: [] };
+    if (matches.length === 1) return { provider: matches[0], candidates: [] };
+    return { provider: null, candidates: matches };
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/components/ProviderIcon.tsx
+  function ProviderIcon({ provider, size = 16, className = "", style }) {
+    const props = { width: size, height: size, viewBox: "0 0 24 24", className, fill: "none", style };
+    switch (provider) {
+      case "openai":
+        return /* @__PURE__ */ React.createElement("svg", { ...props, fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M22.28 9.82a5.94 5.94 0 0 0-.51-4.91 6.04 6.04 0 0 0-5.19-2.95 6 6 0 0 0-4.49 2.02 5.5 5.5 0 0 0-4.1-1.48 5.5 5.5 0 0 0-5.24 5.5 5.5 5.5 0 0 0 .51 2.36 5.5 5.5 0 0 0-2.52 4.16 5.5 5.5 0 0 0 5.19 5.5 5.5 5.5 0 0 0 4.49-2.02 5.5 5.5 0 0 0 4.1 1.48 5.5 5.5 0 0 0 5.24-5.5 5.5 5.5 0 0 0-.51-2.36 5.5 5.5 0 0 0 2.52-4.16 5.5 5.5 0 0 0 .51-1.12zM12.2 17.4a4.2 4.2 0 0 1-4.2-4.2 4.2 4.2 0 0 1 .12-1.02l8.4-4.2a4.2 4.2 0 0 1 1.68 3.36 4.2 4.2 0 0 1-6 4.06z" }));
+      case "anthropic":
+        return /* @__PURE__ */ React.createElement("svg", { ...props, fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M13.82 12L8.82 22h3.94l5-10-5-10H8.82l5 10z" }), /* @__PURE__ */ React.createElement("path", { d: "M7.82 12L4.94 6.2 2.06 12l2.88 5.8L7.82 12z" }));
+      case "perplexity":
+        return /* @__PURE__ */ React.createElement("svg", { ...props, fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M12 2L3 9.5v8.2L12 24l9-6.3V9.5L12 2zm0 3.2l6.2 4.3v6L12 19.8 5.8 15.5v-6L12 5.2zM12 7.5L8 10.3v3.4l4 2.8 4-2.8v-3.4l-4-2.8z" }));
+      case "kimi":
+        return /* @__PURE__ */ React.createElement("svg", { ...props, fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3.5c3.6 0 6.5 2.9 6.5 6.5s-2.9 6.5-6.5 6.5-6.5-2.9-6.5-6.5 2.9-6.5 6.5-6.5zm0 3a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z" }));
+      case "deepseek":
+        return /* @__PURE__ */ React.createElement("svg", { ...props, fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 3.5c3.6 0 6.5 2.9 6.5 6.5s-2.9 6.5-6.5 6.5-6.5-2.9-6.5-6.5S8.4 5.5 12 5.5zm-3 6.5a3 3 0 0 0 6 0 3 3 0 0 0-6 0z" }));
+      case "gemini":
+        return /* @__PURE__ */ React.createElement("svg", { ...props, fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M12 2c0 5.5-4.5 10-10 10 5.5 0 10 4.5 10 10 0-5.5 4.5-10 10-10-5.5 0-10-4.5-10-10z" }));
+      case "groq":
+        return /* @__PURE__ */ React.createElement("svg", { ...props, fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5l-4-4 1.41-1.41L11 13.67l5.59-5.59L18 9.5l-7 7z" }));
+      case "mistral":
+        return /* @__PURE__ */ React.createElement("svg", { ...props, fill: "currentColor" }, /* @__PURE__ */ React.createElement("rect", { x: "3", y: "3", width: "4", height: "4" }), /* @__PURE__ */ React.createElement("rect", { x: "9", y: "3", width: "4", height: "4" }), /* @__PURE__ */ React.createElement("rect", { x: "15", y: "3", width: "4", height: "4" }), /* @__PURE__ */ React.createElement("rect", { x: "9", y: "9", width: "4", height: "4" }), /* @__PURE__ */ React.createElement("rect", { x: "15", y: "9", width: "4", height: "4" }), /* @__PURE__ */ React.createElement("rect", { x: "3", y: "9", width: "4", height: "4" }), /* @__PURE__ */ React.createElement("rect", { x: "3", y: "15", width: "4", height: "4" }), /* @__PURE__ */ React.createElement("rect", { x: "9", y: "15", width: "4", height: "4" }), /* @__PURE__ */ React.createElement("rect", { x: "15", y: "15", width: "4", height: "4" }), /* @__PURE__ */ React.createElement("rect", { x: "9", y: "15", width: "4", height: "4", opacity: "0.5" }));
+      case "openrouter":
+        return /* @__PURE__ */ React.createElement("svg", { ...props, fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M12 2L2 12l10 10 10-10L12 2zm0 3.5L18.5 12 12 18.5 5.5 12 12 5.5z" }));
+      default:
+        return null;
+    }
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/lib/fileParser.ts
+  var IMAGE_EXTS = ["png", "jpg", "jpeg", "webp", "gif"];
+  var AUDIO_EXTS = ["mp3", "wav", "m4a", "ogg", "aac", "flac"];
+  var VIDEO_EXTS = ["mp4", "webm", "mov", "avi", "mkv"];
+  var DOC_EXTS = [
+    "txt",
+    "md",
+    "markdown",
+    "json",
+    "js",
+    "jsx",
+    "ts",
+    "tsx",
+    "py",
+    "css",
+    "html",
+    "xml",
+    "yaml",
+    "yml",
+    "csv",
+    "sh",
+    "sql",
+    "go",
+    "rs",
+    "java",
+    "c",
+    "cpp",
+    "h",
+    "rb",
+    "php",
+    "swift",
+    "kt",
+    "scala",
+    "toml",
+    "ini",
+    "env",
+    "log",
+    "pdf"
+  ];
+  var ACCEPTED_EXTENSIONS = [...IMAGE_EXTS, ...AUDIO_EXTS, ...VIDEO_EXTS, ...DOC_EXTS];
+  var MAX_FILE_SIZE = 10 * 1024 * 1024;
+  var MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+  var ACCEPTED_FILE_TYPES = ACCEPTED_EXTENSIONS.map((e) => `.${e}`).join(",");
+  function isAcceptedFile(file) {
+    const ext = file.name.split(".").pop()?.toLowerCase() || "";
+    return ACCEPTED_EXTENSIONS.includes(ext);
+  }
+  function getFileKind(ext) {
+    if (IMAGE_EXTS.includes(ext)) return "image";
+    if (AUDIO_EXTS.includes(ext)) return "audio";
+    if (VIDEO_EXTS.includes(ext)) return "video";
+    return "document";
+  }
+  function getFileExt(name) {
+    return name.split(".").pop()?.toLowerCase() || "";
+  }
+  function uid3() {
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  }
+  function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  function getMediaDuration(file) {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const el = file.type.startsWith("audio") ? new Audio(url) : document.createElement("video");
+      el.preload = "metadata";
+      el.onloadedmetadata = () => {
+        const d = isFinite(el.duration) ? el.duration : void 0;
+        URL.revokeObjectURL(url);
+        resolve(d);
+      };
+      el.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(void 0);
+      };
+    });
+  }
+  async function extractPdfText(file) {
+    try {
+      const buffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      const decoder = new TextDecoder("latin1");
+      const raw = decoder.decode(bytes);
+      const textParts = [];
+      const regex = /\(((?:[^()\\]|\\.|(?:\([^()]*\)))*)\)/g;
+      let match;
+      let count = 0;
+      while ((match = regex.exec(raw)) !== null && count < 5e4) {
+        let text = match[1];
+        text = text.replace(/\\n/g, "\n").replace(/\\r/g, "\r").replace(/\\t/g, "	").replace(/\\\(/g, "(").replace(/\\\)/g, ")").replace(/\\\\/g, "\\");
+        if (text.length > 0 && /^[\x20-\x7E\u0400-\u04FF\u0080-\u024F\s]+$/.test(text)) {
+          textParts.push(text);
+          count += text.length;
+        }
+      }
+      if (textParts.length === 0) {
+        return `[PDF file: ${file.name}]
+
+[Note: This PDF appears to be image-based or encrypted. Text extraction was not possible.]`;
+      }
+      return textParts.join(" ");
+    } catch {
+      return `[PDF file: ${file.name}]
+
+[Note: Could not extract text from this PDF.]`;
+    }
+  }
+  async function extractJsonText(file) {
+    const text = await file.text();
+    try {
+      return JSON.stringify(JSON.parse(text), null, 2);
+    } catch {
+      return text;
+    }
+  }
+  async function parseFile(file) {
+    const ext = getFileExt(file.name);
+    const kind = getFileKind(ext);
+    if (file.size > MAX_FILE_SIZE) {
+      return {
+        id: uid3(),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        ext,
+        kind,
+        content: `[File: ${file.name}]
+
+[Note: File exceeds 10MB size limit and its content was not loaded.]`
+      };
+    }
+    if (kind === "image") {
+      if (file.size > MAX_IMAGE_SIZE) {
+        return {
+          id: uid3(),
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          ext,
+          kind,
+          content: `[Image: ${file.name}]
+
+[Note: Image exceeds 5MB limit and was not sent to the model.]`
+        };
+      }
+      const dataUrl = await fileToDataUrl(file);
+      return {
+        id: uid3(),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        ext,
+        kind,
+        dataUrl,
+        content: `[Image attached: ${file.name}]`
+      };
+    }
+    if (kind === "audio") {
+      const duration = await getMediaDuration(file);
+      const durStr = duration ? `${Math.round(duration)}s` : "unknown duration";
+      return {
+        id: uid3(),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        ext,
+        kind,
+        duration,
+        content: `[Audio file attached: ${file.name}]
+Format: ${ext.toUpperCase()}
+Duration: ${durStr}
+Size: ${formatFileSize(file.size)}
+
+[Note: Audio content cannot be directly transcribed by this client. The model receives metadata only.]`
+      };
+    }
+    if (kind === "video") {
+      const duration = await getMediaDuration(file);
+      const durStr = duration ? `${Math.round(duration)}s` : "unknown duration";
+      return {
+        id: uid3(),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        ext,
+        kind,
+        duration,
+        content: `[Video file attached: ${file.name}]
+Format: ${ext.toUpperCase()}
+Duration: ${durStr}
+Size: ${formatFileSize(file.size)}
+
+[Note: Video content cannot be directly processed by this client. The model receives metadata only.]`
+      };
+    }
+    let content;
+    if (ext === "pdf") {
+      content = await extractPdfText(file);
+    } else if (ext === "json") {
+      content = await extractJsonText(file);
+    } else {
+      content = await file.text();
+    }
+    const MAX_CONTENT = 1e5;
+    if (content.length > MAX_CONTENT) {
+      content = content.slice(0, MAX_CONTENT) + "\n\n[... content truncated due to length ...]";
+    }
+    return { id: uid3(), name: file.name, size: file.size, type: file.type, ext, kind, content };
+  }
+  async function preParseFile(file) {
+    const ext = getFileExt(file.name);
+    const kind = getFileKind(ext);
+    const extra = { kind };
+    if (kind === "image" && file.size <= MAX_IMAGE_SIZE) {
+      extra.dataUrl = await fileToDataUrl(file);
+    } else if (kind === "audio" || kind === "video") {
+      extra.duration = await getMediaDuration(file);
+    }
+    return extra;
+  }
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+  function formatDuration(seconds) {
+    if (!seconds || !isFinite(seconds)) return "";
+    const m = Math.floor(seconds / 60);
+    const s = Math.round(seconds % 60);
+    return m > 0 ? `${m}:${s.toString().padStart(2, "0")}` : `${s}s`;
+  }
+  function formatPromptWithFiles(question, files) {
+    if (files.length === 0) return question;
+    const fileBlocks = files.map((f) => {
+      return `[Attached File: ${f.name}]
+
+${f.content}`;
+    });
+    return `${fileBlocks.join("\n\n")}
+
+[User Question]: ${question}`;
+  }
+  function getFileIconName(ext) {
+    const codeExts = ["js", "jsx", "ts", "tsx", "py", "go", "rs", "java", "c", "cpp", "h", "rb", "php", "swift", "kt", "scala", "sh", "sql"];
+    const docExts = ["txt", "md", "markdown", "csv", "log", "env", "ini", "toml"];
+    if (ext === "pdf") return "FileText";
+    if (ext === "json" || ext === "yaml" || ext === "yml" || ext === "xml") return "Braces";
+    if (ext === "html" || ext === "css") return "Code2";
+    if (codeExts.includes(ext)) return "FileCode2";
+    if (docExts.includes(ext)) return "FileText";
+    return "File";
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/ChatInput.tsx
+  var SUGGESTIONS = [
+    { icon: GitCompare, label: "Сравнить", prompt: "Сравни React и Vue для нового проекта — плюсы, минусы, когда выбирать." },
+    { icon: LineChart, label: "Финансы", prompt: "Объясни простыми словами, как работают сложные проценты." },
+    { icon: Wrench, label: "Устранение неполадок", prompt: "Мой код выдаёт ошибку CORS при запросе к API. Как это исправить?" },
+    { icon: Code2, label: "Напиши код", prompt: "Напиши TypeScript функцию для debounce с возможностью отмены." },
+    { icon: Lightbulb, label: "Идеи", prompt: "Дай 5 креативных названий для AI-приложения для продуктивности." },
+    { icon: PenLine, label: "Напиши текст", prompt: "Напиши дружелюбное письмо команде с просьбой обновить статус проекта." },
+    { icon: Languages, label: "Перевод", prompt: "Переведи на английский: «Добро пожаловать в наше сообщество!»" }
+  ];
+  function ChatInput({
+    onSend,
+    onStop,
+    onOpenModelSheet,
+    isStreaming,
+    disabled,
+    placeholder,
+    showSuggestions = false
+  }) {
+    const [value, setValue] = (0, import_react4.useState)("");
+    const [pendingFiles, setPendingFiles] = (0, import_react4.useState)([]);
+    const [suggestionsOpen, setSuggestionsOpen] = (0, import_react4.useState)(true);
+    const textareaRef = (0, import_react4.useRef)(null);
+    const fileInputRef = (0, import_react4.useRef)(null);
+    const { activeModel } = useSavedModels();
+    (0, import_react4.useEffect)(() => {
+      const el = textareaRef.current;
+      if (!el) return;
+      el.style.height = "auto";
+      el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+    }, [value]);
+    (0, import_react4.useEffect)(() => {
+      if (showSuggestions) setSuggestionsOpen(true);
+    }, [showSuggestions]);
+    const handleSubmit = () => {
+      if (isStreaming || disabled) return;
+      const text = value.trim();
+      if (!text && pendingFiles.length === 0) return;
+      onSend(text, pendingFiles);
+      setValue("");
+      setPendingFiles([]);
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    };
+    const handleSuggestionClick = (prompt) => {
+      setValue(prompt);
+      requestAnimationFrame(() => {
+        textareaRef.current?.focus();
+        const el = textareaRef.current;
+        if (el) {
+          el.style.height = "auto";
+          el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+        }
+      });
+    };
+    const handleFileSelect = async (e) => {
+      const files = Array.from(e.target.files || []);
+      const valid = files.filter(isAcceptedFile);
+      const newPending = await Promise.all(
+        valid.map(async (f) => {
+          const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+          const extra = await preParseFile(f);
+          return {
+            id,
+            name: f.name,
+            size: f.size,
+            type: f.type,
+            file: f,
+            ...extra
+          };
+        })
+      );
+      setPendingFiles((prev) => [...prev, ...newPending]);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+    const removeFile = (id) => {
+      setPendingFiles((prev) => prev.filter((f) => f.id !== id));
+    };
+    const provider = activeModel ? getProvider(activeModel.provider) : null;
+    const canSend = (value.trim() || pendingFiles.length > 0) && !disabled;
+    return /* @__PURE__ */ React.createElement("div", { className: "relative" }, showSuggestions && /* @__PURE__ */ React.createElement("div", { className: "px-3 pb-1.5" }, /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        className: "overflow-hidden transition-all duration-300 ease-out",
+        style: {
+          maxHeight: suggestionsOpen ? "60px" : "0px",
+          opacity: suggestionsOpen ? 1 : 0
+        }
+      },
+      /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          onClick: () => setSuggestionsOpen(false),
+          className: "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-muted transition-colors hover:bg-surface-2 hover:text-text",
+          "aria-label": "Hide suggestions"
+        },
+        /* @__PURE__ */ React.createElement(ChevronDown, { size: 16 })
+      ), /* @__PURE__ */ React.createElement("div", { className: "scroll-thin-x flex items-center gap-2 overflow-x-auto pb-0.5", style: { scrollbarWidth: "none" } }, SUGGESTIONS.map((s) => {
+        const Icon = s.icon;
+        return /* @__PURE__ */ React.createElement(
+          "button",
+          {
+            key: s.label,
+            onClick: () => handleSuggestionClick(s.prompt),
+            className: "radiant-chip flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium text-text transition-all active:scale-95"
+          },
+          /* @__PURE__ */ React.createElement(Icon, { size: 13, className: "text-accent" }),
+          s.label
+        );
+      })))
+    ), !suggestionsOpen && /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: () => setSuggestionsOpen(true),
+        className: "flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted transition-colors hover:bg-surface-2 hover:text-text",
+        "aria-label": "Show suggestions"
+      },
+      /* @__PURE__ */ React.createElement(ChevronUp, { size: 14 }),
+      /* @__PURE__ */ React.createElement("span", null, "Подсказки")
+    )), /* @__PURE__ */ React.createElement("div", { className: "px-3 pb-2 safe-bottom" }, /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        className: `rounded-3xl border border-border bg-surface shadow-lg-theme transition-colors focus-within:border-accent ${showSuggestions && !suggestionsOpen ? "radiant-input-glow" : ""}`
+      },
+      pendingFiles.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-2 px-3 pt-3" }, pendingFiles.map((f) => {
+        const ext = f.name.split(".").pop()?.toLowerCase() || "";
+        const isImage = f.kind === "image" && f.dataUrl;
+        const isAudio = f.kind === "audio";
+        const isVideo = f.kind === "video";
+        const iconName = getFileIconName(ext);
+        const DocIcon = iconName === "FileText" ? FileText : iconName === "FileCode2" ? FileCode2 : iconName === "Braces" ? Braces : File;
+        return /* @__PURE__ */ React.createElement(
+          "div",
+          {
+            key: f.id,
+            className: "animate-scale-in relative flex items-center gap-2 rounded-xl border border-border bg-bg/50 py-1.5 pl-1.5 pr-1.5"
+          },
+          isImage ? /* @__PURE__ */ React.createElement("img", { src: f.dataUrl, alt: f.name, className: "h-8 w-8 shrink-0 rounded-lg object-cover" }) : isAudio ? /* @__PURE__ */ React.createElement("div", { className: "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/15" }, /* @__PURE__ */ React.createElement(Mic, { size: 14, className: "text-accent" })) : isVideo ? /* @__PURE__ */ React.createElement("div", { className: "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/15" }, /* @__PURE__ */ React.createElement(Video, { size: 14, className: "text-accent" })) : /* @__PURE__ */ React.createElement("div", { className: "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-2" }, /* @__PURE__ */ React.createElement(DocIcon, { size: 14, className: "text-muted" })),
+          /* @__PURE__ */ React.createElement("div", { className: "min-w-0 pr-0.5" }, /* @__PURE__ */ React.createElement("div", { className: "max-w-[100px] truncate text-xs font-medium" }, f.name), /* @__PURE__ */ React.createElement("div", { className: "text-[10px] text-muted/70" }, isAudio || isVideo ? `${formatDuration(f.duration) || formatFileSize(f.size)} · ${formatFileSize(f.size)}` : formatFileSize(f.size))),
+          /* @__PURE__ */ React.createElement(
+            "button",
+            {
+              onClick: () => removeFile(f.id),
+              className: "flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-text",
+              "aria-label": "Remove file"
+            },
+            /* @__PURE__ */ React.createElement(X, { size: 11 })
+          )
+        );
+      })),
+      /* @__PURE__ */ React.createElement(
+        "textarea",
+        {
+          ref: textareaRef,
+          value,
+          onChange: (e) => setValue(e.target.value),
+          onKeyDown: handleKeyDown,
+          disabled,
+          placeholder: placeholder || "Задайте любой вопрос...",
+          rows: 1,
+          className: "scroll-thin max-h-[160px] w-full resize-none bg-transparent px-4 pt-3.5 pb-1 text-[15px] leading-relaxed outline-none placeholder:text-muted"
+        }
+      ),
+      /* @__PURE__ */ React.createElement(
+        "input",
+        {
+          ref: fileInputRef,
+          type: "file",
+          accept: ACCEPTED_FILE_TYPES,
+          multiple: true,
+          onChange: handleFileSelect,
+          className: "hidden"
+        }
+      ),
+      /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between px-2.5 pb-2.5 pt-1" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-text",
+          "aria-label": "More options"
+        },
+        /* @__PURE__ */ React.createElement(Plus, { size: 20 })
+      ), /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          onClick: () => fileInputRef.current?.click(),
+          className: "flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-accent",
+          "aria-label": "Attach file"
+        },
+        /* @__PURE__ */ React.createElement(Paperclip, { size: 18 })
+      ), /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          onClick: onOpenModelSheet,
+          className: "flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium transition-colors hover:border-accent"
+        },
+        activeModel && provider ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
+          ProviderIcon,
+          {
+            provider: activeModel.provider,
+            size: 14,
+            style: { color: provider.color }
+          }
+        ), /* @__PURE__ */ React.createElement(
+          "span",
+          {
+            className: "max-w-[100px] truncate",
+            style: { color: provider.color }
+          },
+          activeModel.nickname
+        ), /* @__PURE__ */ React.createElement("span", { className: "hidden h-3.5 w-px bg-border sm:inline-block" }), /* @__PURE__ */ React.createElement("span", { className: "hidden max-w-[80px] truncate text-muted sm:inline" }, activeModel.modelLabel)) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Sparkles, { size: 14, className: "text-muted" }), /* @__PURE__ */ React.createElement("span", { className: "text-muted" }, "Модель")),
+        /* @__PURE__ */ React.createElement(ChevronDown, { size: 13, className: "text-muted" })
+      )), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-text",
+          "aria-label": "Voice input"
+        },
+        /* @__PURE__ */ React.createElement(Mic, { size: 18 })
+      ), isStreaming ? /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          onClick: onStop,
+          className: "flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-text transition-colors hover:bg-border",
+          "aria-label": "Stop"
+        },
+        /* @__PURE__ */ React.createElement(Square, { size: 14, className: "fill-current" })
+      ) : /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          onClick: handleSubmit,
+          disabled: !canSend,
+          className: "flex h-8 w-8 items-center justify-center rounded-full bg-accent text-accent-text transition-opacity disabled:cursor-not-allowed disabled:opacity-30",
+          "aria-label": "Send"
+        },
+        /* @__PURE__ */ React.createElement(ArrowUp, { size: 18 })
+      )))
+    )));
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/MessageBubble.tsx
+  var import_react7 = __toESM(require_react(), 1);
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/Markdown.tsx
+  var import_react6 = __toESM(require_react(), 1);
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/CodeBlock.tsx
+  var import_react5 = __toESM(require_react(), 1);
+  function highlightLine(line) {
+    let html = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    html = html.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/g, '<span class="tok-str">$1</span>');
+    html = html.replace(/(\/\/[^\n]*|#[^\n]*)/g, '<span class="tok-com">$1</span>');
+    html = html.replace(
+      /\b(const|let|var|function|return|if|else|for|while|import|from|export|default|class|new|await|async|yield|typeof|instanceof|in|of|try|catch|finally|throw|break|continue|switch|case|do|void|delete|interface|type|enum|implements|extends|public|private|protected|static|readonly|namespace|as|is|def|elif|None|True|False|print|self|fn|let|pub|use|match|impl|trait|struct)\b/g,
+      '<span class="tok-kw">$1</span>'
+    );
+    html = html.replace(/\b(\d+\.?\d*)\b/g, '<span class="tok-num">$1</span>');
+    html = html.replace(/\b(true|false|null|undefined|nil)\b/g, '<span class="tok-bool">$1</span>');
+    html = html.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)(?=\s*\()/g, '<span class="tok-fn">$1</span>');
+    return html;
+  }
+  function CodeBlockInner({ language, code }) {
+    const [copied, setCopied] = (0, import_react5.useState)(false);
+    const handleCopy = () => {
+      navigator.clipboard.writeText(code).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2e3);
+      });
+    };
+    const lines = code.replace(/\n$/, "").split("\n");
+    return /* @__PURE__ */ React.createElement("div", { className: "group/code my-3 overflow-hidden rounded-lg border border-border bg-code-bg" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between border-b border-border px-3 py-1.5" }, /* @__PURE__ */ React.createElement("span", { className: "font-mono text-[11px] uppercase tracking-wider text-muted" }, language || "code"), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: handleCopy,
+        className: "flex items-center gap-1.5 text-[11px] text-muted transition-colors hover:text-text",
+        "aria-label": "Copy code"
+      },
+      copied ? /* @__PURE__ */ React.createElement(Check, { size: 12 }) : /* @__PURE__ */ React.createElement(Copy, { size: 12 }),
+      copied ? "Copied" : "Copy"
+    )), /* @__PURE__ */ React.createElement("div", { className: "scroll-thin overflow-x-auto p-3" }, /* @__PURE__ */ React.createElement("pre", { className: "font-mono text-[13px] leading-relaxed" }, /* @__PURE__ */ React.createElement("code", null, lines.map((line, i) => /* @__PURE__ */ React.createElement("span", { key: i, className: "block", dangerouslySetInnerHTML: { __html: highlightLine(line) || "&nbsp;" } }))))));
+  }
+  var CodeBlock = (0, import_react5.memo)(CodeBlockInner);
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/Markdown.tsx
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function renderInline(text) {
+    let out = escapeHtml(text);
+    out = out.replace(/`([^`]+)`/g, "<code>$1</code>");
+    out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    out = out.replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>");
+    out = out.replace(
+      /\[([^\]]+)\]\(([^)\s]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
+    return out;
+  }
+  function parseBlocks(md) {
+    const blocks = [];
+    const fence = /```(\w*)\n?([\s\S]*?)```/g;
+    let last = 0;
+    let m;
+    while ((m = fence.exec(md)) !== null) {
+      if (m.index > last) blocks.push({ type: "text", content: md.slice(last, m.index) });
+      blocks.push({ type: "code", lang: m[1] || "", content: m[2].replace(/\n$/, "") });
+      last = fence.lastIndex;
+    }
+    if (last < md.length) blocks.push({ type: "text", content: md.slice(last) });
+    return blocks;
+  }
+  function renderTextBlock(text) {
+    const lines = text.split("\n");
+    let html = "";
+    let inList = null;
+    let para = [];
+    const flushPara = () => {
+      if (para.length) {
+        html += `<p>${renderInline(para.join(" "))}</p>`;
+        para = [];
+      }
+    };
+    const closeList = () => {
+      if (inList) {
+        html += `</${inList}>`;
+        inList = null;
+      }
+    };
+    for (const raw of lines) {
+      const line = raw.trimEnd();
+      if (!line.trim()) {
+        flushPara();
+        closeList();
+        continue;
+      }
+      const h = line.match(/^(#{1,3})\s+(.*)/);
+      if (h) {
+        flushPara();
+        closeList();
+        const level = h[1].length;
+        html += `<h${level}>${renderInline(h[2])}</h${level}>`;
+        continue;
+      }
+      const ul = line.match(/^[-*]\s+(.*)/);
+      if (ul) {
+        flushPara();
+        if (inList !== "ul") {
+          closeList();
+          html += "<ul>";
+          inList = "ul";
+        }
+        html += `<li>${renderInline(ul[1])}</li>`;
+        continue;
+      }
+      const ol = line.match(/^\d+\.\s+(.*)/);
+      if (ol) {
+        flushPara();
+        if (inList !== "ol") {
+          closeList();
+          html += "<ol>";
+          inList = "ol";
+        }
+        html += `<li>${renderInline(ol[1])}</li>`;
+        continue;
+      }
+      const bq = line.match(/^>\s+(.*)/);
+      if (bq) {
+        flushPara();
+        closeList();
+        html += `<blockquote>${renderInline(bq[1])}</blockquote>`;
+        continue;
+      }
+      const hr = line.match(/^(-{3,}|\*{3,})$/);
+      if (hr) {
+        flushPara();
+        closeList();
+        html += "<hr />";
+        continue;
+      }
+      closeList();
+      para.push(line);
+    }
+    flushPara();
+    closeList();
+    return html;
+  }
+  function MarkdownInner({ content }) {
+    const blocks = parseBlocks(content);
+    return /* @__PURE__ */ React.createElement("div", { className: "prose-chat" }, blocks.map(
+      (block, i) => block.type === "code" ? /* @__PURE__ */ React.createElement(CodeBlock, { key: i, language: block.lang || "", code: block.content }) : /* @__PURE__ */ React.createElement("div", { key: i, dangerouslySetInnerHTML: { __html: renderTextBlock(block.content) } })
+    ));
+  }
+  var Markdown = (0, import_react6.memo)(MarkdownInner);
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/MessageBubble.tsx
+  function DocChip({ name, size, ext }) {
+    const iconName = getFileIconName(ext);
+    const Icon = iconName === "FileText" ? FileText : iconName === "FileCode2" ? FileCode2 : iconName === "Braces" ? Braces : File;
+    return /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 rounded-xl border border-border/60 bg-bg/40 px-2.5 py-1.5" }, /* @__PURE__ */ React.createElement(Icon, { size: 14, className: "shrink-0 text-muted" }), /* @__PURE__ */ React.createElement("span", { className: "max-w-[120px] truncate text-xs font-medium" }, name), /* @__PURE__ */ React.createElement("span", { className: "text-[10px] text-muted/70" }, formatFileSize(size)));
+  }
+  function AudioCard({ name, size, duration }) {
+    return /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2.5 rounded-xl border border-border/60 bg-bg/40 px-3 py-2" }, /* @__PURE__ */ React.createElement("div", { className: "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/15" }, /* @__PURE__ */ React.createElement(Music, { size: 15, className: "text-accent" })), /* @__PURE__ */ React.createElement("div", { className: "min-w-0" }, /* @__PURE__ */ React.createElement("div", { className: "max-w-[140px] truncate text-xs font-medium" }, name), /* @__PURE__ */ React.createElement("div", { className: "text-[10px] text-muted/70" }, formatDuration(duration) || "—", " · ", formatFileSize(size))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-0.5" }, [6, 10, 14, 8, 12, 6, 10, 14, 8, 12, 6, 10].map((h, i) => /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        key: i,
+        className: "w-0.5 rounded-full bg-accent/40",
+        style: { height: h }
+      }
+    ))));
+  }
+  function VideoCard({ name, size, duration, dataUrl }) {
+    return /* @__PURE__ */ React.createElement("div", { className: "overflow-hidden rounded-xl border border-border/60 bg-bg/40" }, /* @__PURE__ */ React.createElement("div", { className: "relative flex h-20 w-full items-center justify-center bg-surface-2" }, dataUrl ? /* @__PURE__ */ React.createElement("video", { src: dataUrl, className: "h-full w-full object-cover", muted: true }) : /* @__PURE__ */ React.createElement(Video, { size: 24, className: "text-muted" }), /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 flex items-center justify-center bg-black/20" }, /* @__PURE__ */ React.createElement("div", { className: "flex h-8 w-8 items-center justify-center rounded-full bg-white/90" }, /* @__PURE__ */ React.createElement("div", { className: "ml-0.5 h-0 w-0 border-y-[6px] border-l-[10px] border-y-transparent border-l-black" })))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between px-2.5 py-1.5" }, /* @__PURE__ */ React.createElement("span", { className: "max-w-[120px] truncate text-xs font-medium" }, name), /* @__PURE__ */ React.createElement("span", { className: "text-[10px] text-muted/70" }, formatDuration(duration) || "—", " · ", formatFileSize(size))));
+  }
+  function ImageLightbox({ src, onClose }) {
+    return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-[70] flex items-center justify-center bg-black/80", onClick: onClose }, /* @__PURE__ */ React.createElement("button", { className: "absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur" }, /* @__PURE__ */ React.createElement(X, { size: 20 })), /* @__PURE__ */ React.createElement("img", { src, className: "max-h-[90vh] max-w-[90vw] rounded-xl object-contain", alt: "" }));
+  }
+  function AttachmentPreview({ att }) {
+    const [lightbox, setLightbox] = (0, import_react7.useState)(false);
+    if (att.kind === "image" && att.dataUrl) {
+      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { onClick: () => setLightbox(true), className: "overflow-hidden rounded-xl" }, /* @__PURE__ */ React.createElement(
+        "img",
+        {
+          src: att.dataUrl,
+          alt: att.name,
+          className: "h-20 w-20 shrink-0 rounded-xl border border-border/60 object-cover transition-transform hover:scale-105"
+        }
+      )), lightbox && /* @__PURE__ */ React.createElement(ImageLightbox, { src: att.dataUrl, onClose: () => setLightbox(false) }));
+    }
+    if (att.kind === "audio") return /* @__PURE__ */ React.createElement(AudioCard, { name: att.name, size: att.size, ext: att.ext, kind: att.kind, duration: att.duration });
+    if (att.kind === "video") return /* @__PURE__ */ React.createElement(VideoCard, { name: att.name, size: att.size, ext: att.ext, kind: att.kind, duration: att.duration, dataUrl: att.dataUrl });
+    return /* @__PURE__ */ React.createElement(DocChip, { name: att.name, size: att.size, ext: att.ext, kind: att.kind });
+  }
+  function MessageBubbleInner({ message }) {
+    const [copied, setCopied] = (0, import_react7.useState)(false);
+    const isUser = message.role === "user";
+    const { models } = useSavedModels();
+    const savedModel = message.modelId ? models.find((m) => m.id === message.modelId) : null;
+    const handleCopy = () => {
+      navigator.clipboard.writeText(message.content).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2e3);
+      });
+    };
+    if (isUser) {
+      const images = message.attachments?.filter((a) => a.kind === "image" && a.dataUrl) || [];
+      const media = message.attachments?.filter((a) => a.kind === "audio" || a.kind === "video") || [];
+      const docs = message.attachments?.filter((a) => a.kind === "document") || [];
+      return /* @__PURE__ */ React.createElement("div", { className: "animate-fade-in-up flex justify-end gap-2.5" }, /* @__PURE__ */ React.createElement("div", { className: "max-w-[85%]" }, images.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "mb-1.5 flex flex-wrap justify-end gap-1.5" }, images.map((att, i) => /* @__PURE__ */ React.createElement(AttachmentPreview, { key: i, att }))), media.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "mb-1.5 flex flex-col items-end gap-1.5" }, media.map((att, i) => /* @__PURE__ */ React.createElement(AttachmentPreview, { key: i, att }))), docs.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "mb-1.5 flex flex-wrap justify-end gap-1.5" }, docs.map((att, i) => /* @__PURE__ */ React.createElement(AttachmentPreview, { key: i, att }))), /* @__PURE__ */ React.createElement("div", { className: "rounded-2xl rounded-br-md bg-accent px-3.5 py-2.5 text-sm leading-relaxed text-accent-text" }, message.attachments && message.attachments.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "mb-1.5 flex items-center gap-1 text-[11px] font-medium text-accent-text/70" }, /* @__PURE__ */ React.createElement(Paperclip, { size: 11 }), message.attachments.length, " ", message.attachments.length === 1 ? "файл" : "файла"), message.content && /* @__PURE__ */ React.createElement("p", { className: "whitespace-pre-wrap break-words" }, message.content))), /* @__PURE__ */ React.createElement("div", { className: "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-2 text-muted" }, /* @__PURE__ */ React.createElement(User, { size: 13 })));
+    }
+    const provider = savedModel ? getProvider(savedModel.provider) : null;
+    return /* @__PURE__ */ React.createElement("div", { className: "animate-fade-in-up flex gap-2.5" }, /* @__PURE__ */ React.createElement("div", { className: "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-2" }, savedModel && provider ? /* @__PURE__ */ React.createElement(ProviderIcon, { provider: savedModel.provider, size: 13, style: { color: provider.color } }) : /* @__PURE__ */ React.createElement(Sparkles, { size: 13, className: "text-muted" })), /* @__PURE__ */ React.createElement("div", { className: "min-w-0 flex-1" }, /* @__PURE__ */ React.createElement("div", { className: "mb-1 flex items-center gap-2" }, /* @__PURE__ */ React.createElement("span", { className: "text-xs font-semibold" }, savedModel ? savedModel.nickname : "Radiant"), message.streaming && /* @__PURE__ */ React.createElement("span", { className: "flex gap-0.5" }, /* @__PURE__ */ React.createElement("span", { className: "typing-dot h-1 w-1 rounded-full bg-muted" }), /* @__PURE__ */ React.createElement("span", { className: "typing-dot h-1 w-1 rounded-full bg-muted" }), /* @__PURE__ */ React.createElement("span", { className: "typing-dot h-1 w-1 rounded-full bg-muted" }))), message.error ? /* @__PURE__ */ React.createElement("div", { className: "flex items-start gap-2 rounded-2xl border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger" }, /* @__PURE__ */ React.createElement(AlertTriangle, { size: 14, className: "mt-0.5 shrink-0" }), /* @__PURE__ */ React.createElement("span", { className: "break-words" }, message.content)) : /* @__PURE__ */ React.createElement(Markdown, { content: message.content || "" }), !message.streaming && !message.error && message.content && /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: handleCopy,
+        className: "mt-1.5 flex items-center gap-1 text-[11px] text-muted transition-colors hover:text-text"
+      },
+      copied ? /* @__PURE__ */ React.createElement(Check, { size: 11 }) : /* @__PURE__ */ React.createElement(Copy, { size: 11 }),
+      copied ? "Скопировано" : "Копировать"
+    )));
+  }
+  var MessageBubble = (0, import_react7.memo)(MessageBubbleInner);
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/ModelSheet.tsx
+  var import_react8 = __toESM(require_react(), 1);
+  function ModelSheet({ open, onClose, onAddKey }) {
+    const { models, activeModelId, setActiveModelId, removeModel } = useSavedModels();
+    const [search, setSearch] = (0, import_react8.useState)("");
+    if (!open) return null;
+    const filtered = models.filter((m) => {
+      const q = search.toLowerCase().trim();
+      if (!q) return true;
+      const provider = getProvider(m.provider);
+      return m.nickname.toLowerCase().includes(q) || m.modelLabel.toLowerCase().includes(q) || provider.label.toLowerCase().includes(q);
+    });
+    return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-50 flex flex-col justify-end" }, /* @__PURE__ */ React.createElement("div", { className: "animate-fade-in absolute inset-0 bg-black/40", onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "animate-sheet-up relative max-h-[80vh] rounded-t-3xl border-t border-border bg-surface shadow-lg-theme" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-center pt-3" }, /* @__PURE__ */ React.createElement("div", { className: "h-1 w-10 rounded-full bg-border" })), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between px-5 py-3" }, /* @__PURE__ */ React.createElement("h2", { className: "text-base font-semibold" }, "Выбор модели"), /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "rounded-full p-1.5 text-muted transition-colors hover:bg-surface-2 hover:text-text" }, /* @__PURE__ */ React.createElement(X, { size: 18 }))), models.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "px-4 pb-2" }, /* @__PURE__ */ React.createElement("div", { className: "relative" }, /* @__PURE__ */ React.createElement(Search, { size: 15, className: "absolute left-3 top-1/2 -translate-y-1/2 text-muted" }), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        value: search,
+        onChange: (e) => setSearch(e.target.value),
+        placeholder: "Поиск по моделям и провайдерам...",
+        className: "w-full rounded-full border border-border bg-bg py-2 pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-muted focus:border-accent"
+      }
+    ))), /* @__PURE__ */ React.createElement("div", { className: "scroll-thin max-h-[45vh] overflow-y-auto px-3 pb-2" }, models.length === 0 ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center justify-center px-6 py-12 text-center" }, /* @__PURE__ */ React.createElement("div", { className: "mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft" }, /* @__PURE__ */ React.createElement(KeyRound, { size: 22, className: "text-accent" })), /* @__PURE__ */ React.createElement("p", { className: "mb-1 text-sm font-medium" }, "Нет добавленных моделей"), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-muted" }, "Добавьте API ключ, чтобы начать использовать Radiant")) : filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center justify-center px-6 py-10 text-center" }, /* @__PURE__ */ React.createElement(Search, { size: 20, className: "mb-2 text-muted" }), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-muted" }, "Ничего не найдено")) : /* @__PURE__ */ React.createElement("div", { className: "space-y-1" }, filtered.map((m) => {
+      const provider = getProvider(m.provider);
+      const isActive = m.id === activeModelId;
+      return /* @__PURE__ */ React.createElement(
+        "div",
+        {
+          key: m.id,
+          className: `group flex items-center gap-3 rounded-2xl border p-3 transition-all ${isActive ? "border-accent bg-accent-soft" : "border-transparent hover:bg-surface-2"}`
+        },
+        /* @__PURE__ */ React.createElement(
+          "button",
+          {
+            onClick: () => {
+              setActiveModelId(m.id);
+              onClose();
+            },
+            className: "flex flex-1 items-center gap-3 text-left"
+          },
+          /* @__PURE__ */ React.createElement(
+            "div",
+            {
+              className: "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+              style: { backgroundColor: `${provider.color}15`, color: provider.color }
+            },
+            /* @__PURE__ */ React.createElement(ProviderIcon, { provider: m.provider, size: 18 })
+          ),
+          /* @__PURE__ */ React.createElement("div", { className: "min-w-0 flex-1" }, /* @__PURE__ */ React.createElement("div", { className: "truncate text-sm font-medium" }, m.nickname), /* @__PURE__ */ React.createElement("div", { className: "truncate text-xs text-muted" }, m.modelLabel, " · ", provider.label))
+        ),
+        /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1" }, /* @__PURE__ */ React.createElement(
+          "button",
+          {
+            onClick: () => removeModel(m.id),
+            className: "rounded-full p-1.5 text-muted opacity-0 transition-all hover:text-danger group-hover:opacity-100",
+            "aria-label": "Remove model"
+          },
+          /* @__PURE__ */ React.createElement(Trash2, { size: 15 })
+        ), isActive && /* @__PURE__ */ React.createElement("div", { className: "flex h-5 w-5 items-center justify-center rounded-full bg-accent" }, /* @__PURE__ */ React.createElement(Check, { size: 13, className: "text-accent-text" })))
+      );
+    }))), /* @__PURE__ */ React.createElement("div", { className: "safe-bottom border-t border-border p-4" }, /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: () => {
+          onClose();
+          onAddKey();
+        },
+        className: "flex w-full items-center justify-center gap-2 rounded-2xl bg-accent py-3 text-sm font-semibold text-accent-text transition-opacity hover:opacity-90"
+      },
+      /* @__PURE__ */ React.createElement(Plus, { size: 18 }),
+      "Добавить API ключ"
+    ))));
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/AddKeyModal.tsx
+  var import_react9 = __toESM(require_react(), 1);
+  function AddKeyModal({ open, onClose }) {
+    const { addModel, atLimit, maxKeys } = useSavedModels();
+    const [apiKey, setApiKey] = (0, import_react9.useState)("");
+    const [showKey, setShowKey] = (0, import_react9.useState)(false);
+    const [nickname, setNickname] = (0, import_react9.useState)("");
+    const [providerId, setProviderId] = (0, import_react9.useState)(null);
+    const [modelId, setModelId] = (0, import_react9.useState)("");
+    const [dropdownOpen, setDropdownOpen] = (0, import_react9.useState)(false);
+    const [saved, setSaved] = (0, import_react9.useState)(false);
+    const [ambiguousCandidates, setAmbiguousCandidates] = (0, import_react9.useState)([]);
+    (0, import_react9.useEffect)(() => {
+      if (!open) return;
+      const { provider, candidates } = detectProviderWithAmbiguity(apiKey);
+      setAmbiguousCandidates(candidates);
+      if (provider && provider !== providerId) {
+        setProviderId(provider);
+        const models = PROVIDER_MODELS[provider];
+        setModelId(models[0]?.id || "");
+      } else if (!provider && candidates.length > 0) {
+        if (providerId && !candidates.includes(providerId)) {
+          setProviderId(null);
+          setModelId("");
+        }
+      } else if (!apiKey) {
+        setProviderId(null);
+        setModelId("");
+        setAmbiguousCandidates([]);
+      }
+    }, [apiKey, open]);
+    (0, import_react9.useEffect)(() => {
+      if (!open) {
+        setApiKey("");
+        setShowKey(false);
+        setNickname("");
+        setProviderId(null);
+        setModelId("");
+        setDropdownOpen(false);
+        setSaved(false);
+        setAmbiguousCandidates([]);
+      }
+    }, [open]);
+    const availableModels = (0, import_react9.useMemo)(
+      () => providerId ? PROVIDER_MODELS[providerId] : [],
+      [providerId]
+    );
+    const selectedModel = availableModels.find((m) => m.id === modelId);
+    const detectedProvider = providerId ? getProvider(providerId) : null;
+    const canSave = apiKey.trim() && providerId && modelId && selectedModel && !atLimit;
+    const handleSave = () => {
+      if (!canSave || !providerId || !selectedModel) return;
+      const nick = nickname.trim() || selectedModel.label;
+      addModel({
+        nickname: nick,
+        provider: providerId,
+        modelId: selectedModel.id,
+        modelLabel: selectedModel.label,
+        apiName: selectedModel.apiName,
+        apiKey: apiKey.trim()
+      });
+      setSaved(true);
+      setTimeout(() => {
+        onClose();
+      }, 800);
+    };
+    const handleManualProviderSelect = (id) => {
+      setProviderId(id);
+      const models = PROVIDER_MODELS[id];
+      setModelId(models[0]?.id || "");
+    };
+    if (!open) return null;
+    return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-[60] flex flex-col" }, /* @__PURE__ */ React.createElement("div", { className: "animate-fade-in absolute inset-0 bg-black/50", onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "animate-sheet-up relative mt-auto flex max-h-[92vh] flex-col rounded-t-3xl border-t border-border bg-surface shadow-lg-theme" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-center pt-3" }, /* @__PURE__ */ React.createElement("div", { className: "h-1 w-10 rounded-full bg-border" })), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-3 px-4 py-3" }, /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: onClose,
+        className: "flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-text"
+      },
+      /* @__PURE__ */ React.createElement(ArrowLeft, { size: 18 })
+    ), /* @__PURE__ */ React.createElement("h2", { className: "flex-1 text-base font-semibold" }, "Добавить API ключ"), saved && /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1 text-sm font-medium text-accent animate-scale-in" }, /* @__PURE__ */ React.createElement(Check, { size: 16 }), " Сохранено")), /* @__PURE__ */ React.createElement("div", { className: "scroll-thin flex-1 overflow-y-auto px-5 pb-4" }, /* @__PURE__ */ React.createElement("div", { className: "mb-4" }, /* @__PURE__ */ React.createElement("label", { className: "mb-1.5 block text-xs font-medium text-muted" }, "API Key"), /* @__PURE__ */ React.createElement("div", { className: "relative" }, /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: showKey ? "text" : "password",
+        value: apiKey,
+        onChange: (e) => setApiKey(e.target.value),
+        placeholder: "Вставьте ваш API ключ...",
+        className: "w-full rounded-2xl border border-border bg-bg px-4 py-3 pr-24 font-mono text-sm outline-none transition-colors placeholder:text-muted focus:border-accent",
+        autoComplete: "off",
+        spellCheck: false
+      }
+    ), /* @__PURE__ */ React.createElement("div", { className: "absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1" }, detectedProvider && /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        className: "flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] font-medium animate-scale-in",
+        style: { backgroundColor: `${detectedProvider.color}15`, color: detectedProvider.color }
+      },
+      /* @__PURE__ */ React.createElement(ProviderIcon, { provider: providerId, size: 12 }),
+      detectedProvider.label
+    ), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: () => setShowKey((v) => !v),
+        className: "rounded-full p-1.5 text-muted transition-colors hover:text-text",
+        "aria-label": "Toggle key visibility"
+      },
+      showKey ? /* @__PURE__ */ React.createElement(EyeOff, { size: 15 }) : /* @__PURE__ */ React.createElement(Eye, { size: 15 })
+    ))), apiKey && !detectedProvider && ambiguousCandidates.length === 0 && /* @__PURE__ */ React.createElement("p", { className: "mt-1.5 text-xs text-muted" }, "Не удалось определить провайдера. Выберите вручную ниже."), apiKey && ambiguousCandidates.length > 1 && !detectedProvider && /* @__PURE__ */ React.createElement("div", { className: "mt-2 rounded-2xl border border-accent/30 bg-accent-soft p-2.5" }, /* @__PURE__ */ React.createElement("p", { className: "mb-1.5 flex items-center gap-1.5 text-xs font-medium text-accent" }, /* @__PURE__ */ React.createElement(Sparkles, { size: 12 }), "Несколько провайдеров подходят к этому ключу. Выберите один:"), /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-2" }, ambiguousCandidates.map((id) => {
+      const p = getProvider(id);
+      return /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          key: id,
+          onClick: () => handleManualProviderSelect(id),
+          className: "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all hover:scale-105",
+          style: { borderColor: `${p.color}40`, color: p.color, backgroundColor: `${p.color}10` }
+        },
+        /* @__PURE__ */ React.createElement(ProviderIcon, { provider: id, size: 13 }),
+        p.label
+      );
+    })))), /* @__PURE__ */ React.createElement("div", { className: "mb-4" }, /* @__PURE__ */ React.createElement("label", { className: "mb-1.5 block text-xs font-medium text-muted" }, "Кастомное название ", /* @__PURE__ */ React.createElement("span", { className: "text-muted/60" }, "(необязательно)")), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        value: nickname,
+        onChange: (e) => setNickname(e.target.value),
+        placeholder: selectedModel?.label ? `Например, "${selectedModel.label} Turbo"` : 'Например, "Мой рабочий GPT-4"',
+        className: "w-full rounded-2xl border border-border bg-bg px-4 py-3 text-sm outline-none transition-colors placeholder:text-muted focus:border-accent",
+        maxLength: 40
+      }
+    )), /* @__PURE__ */ React.createElement("div", { className: "mb-4" }, /* @__PURE__ */ React.createElement("label", { className: "mb-1.5 block text-xs font-medium text-muted" }, "Провайдер"), /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-2" }, PROVIDERS.map((p) => {
+      const active = providerId === p.id;
+      return /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          key: p.id,
+          onClick: () => handleManualProviderSelect(p.id),
+          className: `flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${active ? "border-transparent" : "border-border bg-bg text-muted hover:text-text"}`,
+          style: active ? { backgroundColor: `${p.color}15`, color: p.color, borderColor: `${p.color}40` } : void 0
+        },
+        /* @__PURE__ */ React.createElement(ProviderIcon, { provider: p.id, size: 13 }),
+        p.label
+      );
+    }))), /* @__PURE__ */ React.createElement("div", { className: "mb-4" }, /* @__PURE__ */ React.createElement("label", { className: "mb-1.5 block text-xs font-medium text-muted" }, "Модель"), /* @__PURE__ */ React.createElement("div", { className: "relative" }, /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: () => setDropdownOpen((v) => !v),
+        disabled: !providerId,
+        className: "flex w-full items-center justify-between rounded-2xl border border-border bg-bg px-4 py-3 text-sm transition-colors disabled:opacity-50 hover:border-accent"
+      },
+      /* @__PURE__ */ React.createElement("span", { className: selectedModel ? "font-medium" : "text-muted" }, selectedModel ? selectedModel.label : "Выберите провайдера сначала"),
+      /* @__PURE__ */ React.createElement(ChevronDown, { size: 16, className: `text-muted transition-transform ${dropdownOpen ? "rotate-180" : ""}` })
+    ), dropdownOpen && availableModels.length > 0 && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-10", onClick: () => setDropdownOpen(false) }), /* @__PURE__ */ React.createElement("div", { className: "animate-scale-in absolute left-0 right-0 top-full z-20 mt-1.5 rounded-2xl border border-border bg-surface p-1.5 shadow-lg-theme" }, availableModels.map((m) => /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        key: m.id,
+        onClick: () => {
+          setModelId(m.id);
+          setDropdownOpen(false);
+        },
+        className: `flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${m.id === modelId ? "bg-accent-soft font-medium" : "hover:bg-surface-2"}`
+      },
+      m.id === modelId && /* @__PURE__ */ React.createElement(Check, { size: 14, className: "text-accent" }),
+      /* @__PURE__ */ React.createElement("span", { className: m.id === modelId ? "" : "pl-5" }, m.label)
+    )))))), detectedProvider && /* @__PURE__ */ React.createElement(
+      "a",
+      {
+        href: detectedProvider.docsUrl,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        className: "flex items-center gap-1.5 text-xs text-accent transition-colors hover:underline"
+      },
+      /* @__PURE__ */ React.createElement(KeyRound, { size: 12 }),
+      "Получить ключ ",
+      detectedProvider.label,
+      /* @__PURE__ */ React.createElement(ExternalLink, { size: 10 })
+    )), /* @__PURE__ */ React.createElement("div", { className: "safe-bottom border-t border-border p-4" }, atLimit && /* @__PURE__ */ React.createElement("p", { className: "mb-2 text-center text-xs text-danger" }, `Maximum of ${maxKeys} API keys reached. Remove one to add another.`), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: handleSave,
+        disabled: !canSave,
+        className: "flex w-full items-center justify-center gap-2 rounded-2xl bg-accent py-3.5 text-sm font-semibold text-accent-text transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+      },
+      /* @__PURE__ */ React.createElement(Check, { size: 18 }),
+      "Сохранить"
+    ))));
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/lib/streamChat.ts
+  function systemPrompt() {
+    return {
+      role: "system",
+      content: "You are Radiant, a helpful AI assistant by Aetheris AI. Provide clear, accurate, well-structured answers. Use Markdown for formatting and code blocks for code."
+    };
+  }
+  async function streamOpenAICompatible(url, headers, body, signal, cb) {
+    const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(body), signal });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`HTTP ${res.status}: ${text.slice(0, 300) || res.statusText}`);
+    }
+    const reader = res.body?.getReader();
+    if (!reader) throw new Error("No response stream");
+    const decoder = new TextDecoder();
+    let buffer = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("data:")) continue;
+        const data = trimmed.slice(5).trim();
+        if (data === "[DONE]") return;
+        try {
+          const json = JSON.parse(data);
+          const delta = json.choices?.[0]?.delta?.content ?? json.choices?.[0]?.message?.content ?? "";
+          if (delta) cb.onDelta(delta);
+        } catch {
+        }
+      }
+    }
+  }
+  async function streamAnthropic(apiKey, apiName, messages, signal, cb) {
+    const systemMsg = messages.find((m) => m.role === "system")?.content;
+    const conv = messages.filter((m) => m.role !== "system");
+    const anthropicMessages = conv.map((m) => {
+      if (typeof m.content === "string") {
+        return { role: m.role, content: m.content };
+      }
+      const parts = m.content.map((p) => {
+        if (p.type === "text") return { type: "text", text: p.text };
+        if (p.type === "image_url") {
+          const match = p.image_url.url.match(/^data:(image\/[\w+]+);base64,(.+)$/);
+          if (match) {
+            return {
+              type: "image",
+              source: { type: "base64", media_type: match[1], data: match[2] }
+            };
+          }
+          return { type: "text", text: "[image could not be processed]" };
+        }
+        return { type: "text", text: "" };
+      });
+      return { role: m.role, content: parts };
+    });
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: apiName,
+        max_tokens: 4096,
+        stream: true,
+        system: systemMsg || void 0,
+        messages: anthropicMessages
+      }),
+      signal
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`HTTP ${res.status}: ${text.slice(0, 300) || res.statusText}`);
+    }
+    const reader = res.body?.getReader();
+    if (!reader) throw new Error("No response stream");
+    const decoder = new TextDecoder();
+    let buffer = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("data:")) continue;
+        try {
+          const json = JSON.parse(trimmed.slice(5).trim());
+          if (json.type === "content_block_delta" && json.delta?.text) cb.onDelta(json.delta.text);
+        } catch {
+        }
+      }
+    }
+  }
+  async function streamGemini(apiKey, apiName, messages, signal, cb) {
+    const systemMsg = messages.find((m) => m.role === "system")?.content;
+    const conv = messages.filter((m) => m.role !== "system");
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${apiName}:streamGenerateContent?alt=sse&key=${apiKey}`;
+    const contents = conv.map((m) => {
+      const role = m.role === "assistant" ? "model" : "user";
+      if (typeof m.content === "string") {
+        return { role, parts: [{ text: m.content }] };
+      }
+      const parts = m.content.map((p) => {
+        if (p.type === "text") return { text: p.text };
+        if (p.type === "image_url") {
+          const match = p.image_url.url.match(/^data:(image\/[\w+]+);base64,(.+)$/);
+          if (match) {
+            return { inline_data: { mime_type: match[1], data: match[2] } };
+          }
+          return { text: "[image could not be processed]" };
+        }
+        return { text: "" };
+      });
+      return { role, parts };
+    });
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents,
+        systemInstruction: systemMsg ? { parts: [{ text: systemMsg }] } : void 0,
+        generationConfig: { maxOutputTokens: 4096 }
+      }),
+      signal
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`HTTP ${res.status}: ${text.slice(0, 300) || res.statusText}`);
+    }
+    const reader = res.body?.getReader();
+    if (!reader) throw new Error("No response stream");
+    const decoder = new TextDecoder();
+    let buffer = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("data:")) continue;
+        try {
+          const json = JSON.parse(trimmed.slice(5).trim());
+          const delta = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+          if (delta) cb.onDelta(delta);
+        } catch {
+        }
+      }
+    }
+  }
+  async function streamChat({ model, messages, signal, callbacks }) {
+    const allMessages = [systemPrompt(), ...messages];
+    try {
+      switch (model.provider) {
+        case "anthropic":
+          await streamAnthropic(model.apiKey, model.apiName, messages, signal, callbacks);
+          break;
+        case "gemini":
+          await streamGemini(model.apiKey, model.apiName, messages, signal, callbacks);
+          break;
+        case "openai":
+          await streamOpenAICompatible(
+            "https://api.openai.com/v1/chat/completions",
+            { "Content-Type": "application/json", Authorization: `Bearer ${model.apiKey}` },
+            { model: model.apiName, messages: allMessages, stream: true },
+            signal,
+            callbacks
+          );
+          break;
+        case "groq":
+          await streamOpenAICompatible(
+            "https://api.groq.com/openai/v1/chat/completions",
+            { "Content-Type": "application/json", Authorization: `Bearer ${model.apiKey}` },
+            { model: model.apiName, messages: allMessages, stream: true },
+            signal,
+            callbacks
+          );
+          break;
+        case "perplexity":
+          await streamOpenAICompatible(
+            "https://api.perplexity.ai/chat/completions",
+            { "Content-Type": "application/json", Authorization: `Bearer ${model.apiKey}` },
+            { model: model.apiName, messages: allMessages, stream: true },
+            signal,
+            callbacks
+          );
+          break;
+        case "kimi":
+          await streamOpenAICompatible(
+            "https://api.moonshot.cn/v1/chat/completions",
+            { "Content-Type": "application/json", Authorization: `Bearer ${model.apiKey}` },
+            { model: model.apiName, messages: allMessages, stream: true },
+            signal,
+            callbacks
+          );
+          break;
+        case "deepseek":
+          await streamOpenAICompatible(
+            "https://api.deepseek.com/chat/completions",
+            { "Content-Type": "application/json", Authorization: `Bearer ${model.apiKey}` },
+            { model: model.apiName, messages: allMessages, stream: true },
+            signal,
+            callbacks
+          );
+          break;
+        case "mistral":
+          await streamOpenAICompatible(
+            "https://api.mistral.ai/v1/chat/completions",
+            { "Content-Type": "application/json", Authorization: `Bearer ${model.apiKey}` },
+            { model: model.apiName, messages: allMessages, stream: true },
+            signal,
+            callbacks
+          );
+          break;
+        case "openrouter":
+          await streamOpenAICompatible(
+            "https://openrouter.ai/api/v1/chat/completions",
+            { "Content-Type": "application/json", Authorization: `Bearer ${model.apiKey}` },
+            { model: model.apiName, messages: allMessages, stream: true },
+            signal,
+            callbacks
+          );
+          break;
+      }
+      callbacks.onDone();
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        callbacks.onDone();
+        return;
+      }
+      callbacks.onError(err instanceof Error ? err.message : "Unknown error");
+    }
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/ChatPanel.tsx
+  function buildMultimodalContent(text, files) {
+    const images = files.filter((f) => f.kind === "image" && f.dataUrl);
+    const nonImages = files.filter((f) => f.kind !== "image");
+    if (images.length === 0) {
+      return formatPromptWithFiles(text, files);
+    }
+    const parts = [];
+    const textContext = formatPromptWithFiles(text, nonImages);
+    parts.push({ type: "text", text: textContext });
+    for (const img of images) {
+      if (img.dataUrl) {
+        parts.push({ type: "image_url", image_url: { url: img.dataUrl } });
+      }
+    }
+    return parts;
+  }
+  function ChatPanel() {
+    const { activeModel } = useSavedModels();
+    const {
+      conversations,
+      activeId,
+      activeConversation,
+      setActiveId,
+      createConversation,
+      appendMessages,
+      updateMessage
+    } = useConversations();
+    const [isStreaming, setIsStreaming] = (0, import_react10.useState)(false);
+    const [showScrollDown, setShowScrollDown] = (0, import_react10.useState)(false);
+    const [modelSheetOpen, setModelSheetOpen] = (0, import_react10.useState)(false);
+    const [addKeyOpen, setAddKeyOpen] = (0, import_react10.useState)(false);
+    const abortRef = (0, import_react10.useRef)(null);
+    const scrollRef = (0, import_react10.useRef)(null);
+    const bottomRef = (0, import_react10.useRef)(null);
+    const messages = activeConversation?.messages || [];
+    (0, import_react10.useEffect)(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages.length, messages[messages.length - 1]?.content]);
+    const onScroll = () => {
+      const el = scrollRef.current;
+      if (!el) return;
+      const dist = el.scrollHeight - el.scrollTop - el.clientHeight;
+      setShowScrollDown(dist > 120);
+    };
+    const scrollToBottom = () => bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const handleSend = (0, import_react10.useCallback)(
+      async (text, files) => {
+        if (isStreaming) return;
+        if (!activeModel) {
+          setAddKeyOpen(true);
+          return;
+        }
+        let attachments = [];
+        let chatContent = text;
+        if (files.length > 0) {
+          const parsed = await Promise.all(files.map((f) => parseFile(f.file)));
+          attachments = parsed.map((p) => ({
+            name: p.name,
+            size: p.size,
+            ext: p.ext,
+            kind: p.kind,
+            dataUrl: p.dataUrl,
+            duration: p.duration
+          }));
+          chatContent = buildMultimodalContent(text, parsed);
+        }
+        const userMsg = {
+          id: uid2(),
+          role: "user",
+          content: text,
+          attachments: attachments.length > 0 ? attachments : void 0
+        };
+        const assistantId = uid2();
+        const assistantMsg = {
+          id: assistantId,
+          role: "assistant",
+          content: "",
+          modelId: activeModel.id,
+          streaming: true
+        };
+        let convId = activeId;
+        const existingMessages = activeConversation?.messages || [];
+        if (!convId || !conversations.find((c) => c.id === convId)) {
+          convId = createConversation(text || files[0]?.name || "Новый чат", [userMsg, assistantMsg], activeModel.id);
+        } else {
+          appendMessages(convId, [userMsg, assistantMsg]);
+        }
+        const convMessages = existingMessages.map((m) => ({
+          role: m.role,
+          content: m.content
+        }));
+        convMessages.push({ role: "user", content: chatContent });
+        const controller = new AbortController();
+        abortRef.current = controller;
+        setIsStreaming(true);
+        streamChat({
+          model: activeModel,
+          messages: convMessages,
+          signal: controller.signal,
+          callbacks: {
+            onDelta: (chunk) => {
+              updateMessage(convId, assistantId, {
+                content: (existingMessages.find((m) => m.id === assistantId)?.content || "") + chunk
+              });
+              setConversationsUpdate(convId, assistantId, chunk);
+            },
+            onDone: () => {
+              setIsStreaming(false);
+              abortRef.current = null;
+              updateMessage(convId, assistantId, { streaming: false });
+            },
+            onError: (err) => {
+              setIsStreaming(false);
+              abortRef.current = null;
+              updateMessage(convId, assistantId, { streaming: false, error: true, content: err });
+            }
+          }
+        });
+      },
+      [isStreaming, activeId, activeConversation, conversations, activeModel, createConversation, appendMessages, updateMessage]
+    );
+    const contentRef = (0, import_react10.useRef)(/* @__PURE__ */ new Map());
+    const setConversationsUpdate = (convId, msgId, chunk) => {
+      const key = `${convId}:${msgId}`;
+      const current = contentRef.current.get(key) || "";
+      const next = current + chunk;
+      contentRef.current.set(key, next);
+      updateMessage(convId, msgId, { content: next });
+    };
+    const handleStop = (0, import_react10.useCallback)(() => {
+      abortRef.current?.abort();
+      abortRef.current = null;
+      setIsStreaming(false);
+    }, []);
+    const handleNewChat = () => setActiveId(null);
+    (0, import_react10.useEffect)(() => {
+      if (!isStreaming) {
+        contentRef.current.clear();
+      }
+    }, [isStreaming]);
+    return /* @__PURE__ */ React.createElement("div", { className: "radiant-screen relative flex h-full flex-col" }, /* @__PURE__ */ React.createElement("div", { ref: scrollRef, onScroll, className: "scroll-thin relative flex-1 overflow-y-auto" }, messages.length === 0 ? /* @__PURE__ */ React.createElement("div", { className: "flex min-h-full flex-col items-center justify-center px-4" }, /* @__PURE__ */ React.createElement("div", { className: "mb-6 flex flex-col items-center" }, /* @__PURE__ */ React.createElement(RadiantLogo, { size: "lg" }))) : /* @__PURE__ */ React.createElement("div", { className: "mx-auto max-w-2xl space-y-4 px-4 py-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-center pb-2" }, /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: handleNewChat,
+        className: "flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-surface-2 hover:text-text"
+      },
+      /* @__PURE__ */ React.createElement(Sparkles, { size: 13 }),
+      "Новый чат"
+    )), messages.map((m) => /* @__PURE__ */ React.createElement(MessageBubble, { key: m.id, message: m })), /* @__PURE__ */ React.createElement("div", { ref: bottomRef }))), showScrollDown && messages.length > 0 && /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: scrollToBottom,
+        className: "absolute bottom-32 left-1/2 z-10 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full border border-border bg-surface text-muted shadow-theme transition-colors hover:text-text",
+        "aria-label": "Scroll to bottom"
+      },
+      /* @__PURE__ */ React.createElement(ArrowDown, { size: 15 })
+    ), /* @__PURE__ */ React.createElement(
+      ChatInput,
+      {
+        onSend: handleSend,
+        onStop: handleStop,
+        onOpenModelSheet: () => setModelSheetOpen(true),
+        isStreaming,
+        showSuggestions: messages.length === 0,
+        placeholder: activeModel ? "Задайте любой вопрос..." : "Добавьте API ключ, чтобы начать..."
+      }
+    ), /* @__PURE__ */ React.createElement(
+      ModelSheet,
+      {
+        open: modelSheetOpen,
+        onClose: () => setModelSheetOpen(false),
+        onAddKey: () => setAddKeyOpen(true)
+      }
+    ), /* @__PURE__ */ React.createElement(AddKeyModal, { open: addKeyOpen, onClose: () => setAddKeyOpen(false) }));
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/components/chat/HistoryDrawer.tsx
+  var import_react11 = __toESM(require_react(), 1);
+  function formatTime(ts) {
+    const now = Date.now();
+    const diff = now - ts;
+    const mins = Math.floor(diff / 6e4);
+    const hours = Math.floor(diff / 36e5);
+    const days = Math.floor(diff / 864e5);
+    if (mins < 1) return "только что";
+    if (mins < 60) return `${mins} мин назад`;
+    if (hours < 24) return `${hours} ч назад`;
+    if (days < 7) return `${days} дн назад`;
+    return new Date(ts).toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
+  }
+  function HistoryDrawer({ open, onClose, onNewChat }) {
+    const { conversations, activeId, setActiveId, deleteConversation, chatCloud, chatSyncStatus, chatSyncError } = useConversations();
+    const [search, setSearch] = (0, import_react11.useState)("");
+    if (!open) return null;
+    const filtered = conversations.filter(
+      (c) => c.title.toLowerCase().includes(search.toLowerCase().trim())
+    );
+    const handleSelect = (id) => {
+      setActiveId(id);
+      onClose();
+    };
+    const handleNewChat = () => {
+      onNewChat();
+      onClose();
+    };
+    return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-50 flex justify-end" }, /* @__PURE__ */ React.createElement("div", { className: "animate-fade-in absolute inset-0 bg-black/40", onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "animate-slide-in-right relative flex h-full w-full max-w-sm flex-col bg-surface shadow-lg-theme" }, /* @__PURE__ */ React.createElement("div", { className: "safe-top flex items-center justify-between border-b border-border px-4 py-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement(Clock, { size: 18, className: "text-accent" }), /* @__PURE__ */ React.createElement("h2", { className: "text-base font-semibold" }, "История чатов")), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: onClose,
+        className: "rounded-full p-1.5 text-muted transition-colors hover:bg-surface-2 hover:text-text"
+      },
+      /* @__PURE__ */ React.createElement(X, { size: 18 })
+    )), /* @__PURE__ */ React.createElement("div", { className: "space-y-2.5 border-b border-border px-4 py-3" }, /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: handleNewChat,
+        className: "flex w-full items-center justify-center gap-2 rounded-2xl bg-accent py-2.5 text-sm font-semibold text-accent-text transition-opacity hover:opacity-90"
+      },
+      /* @__PURE__ */ React.createElement(Plus, { size: 17 }),
+      "Новый чат"
+    ), /* @__PURE__ */ React.createElement("div", { className: "relative" }, /* @__PURE__ */ React.createElement(Search, { size: 15, className: "absolute left-3 top-1/2 -translate-y-1/2 text-muted" }), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        value: search,
+        onChange: (e) => setSearch(e.target.value),
+        placeholder: "Поиск по чатам...",
+        className: "w-full rounded-full border border-border bg-bg py-2 pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-muted focus:border-accent"
+      }
+    )), chatCloud && /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        className: `flex items-center gap-1.5 px-1 text-[11px] ${chatSyncStatus === "error" ? "text-danger" : "text-muted"}`,
+        title: chatSyncStatus === "error" ? chatSyncError : void 0
+      },
+      chatSyncStatus === "syncing" ? /* @__PURE__ */ React.createElement(RefreshCw, { size: 12, className: "animate-spin" }) : chatSyncStatus === "error" ? /* @__PURE__ */ React.createElement(AlertTriangle, { size: 12 }) : /* @__PURE__ */ React.createElement(Cloud, { size: 12 }),
+      chatSyncStatus === "syncing" ? "Syncing chats\u2026" : chatSyncStatus === "error" ? "Cloud sync failed \u2014 see Account to retry" : "Chats synced to your account"
+    )), /* @__PURE__ */ React.createElement("div", { className: "scroll-thin flex-1 overflow-y-auto px-2 py-2" }, filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center justify-center px-6 py-16 text-center" }, /* @__PURE__ */ React.createElement("div", { className: "mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-surface-2" }, /* @__PURE__ */ React.createElement(MessageSquare, { size: 22, className: "text-muted" })), /* @__PURE__ */ React.createElement("p", { className: "mb-1 text-sm font-medium" }, conversations.length === 0 ? "Нет сохранённых чатов" : "Ничего не найдено"), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-muted" }, conversations.length === 0 ? "Начните новый чат, и он появится здесь" : "Попробуйте изменить поисковый запрос")) : /* @__PURE__ */ React.createElement("div", { className: "space-y-0.5" }, filtered.map((c) => {
+      const isActive = c.id === activeId;
+      return /* @__PURE__ */ React.createElement(
+        "div",
+        {
+          key: c.id,
+          className: `group flex items-center gap-2.5 rounded-2xl border p-2.5 transition-all ${isActive ? "border-accent bg-accent-soft" : "border-transparent hover:bg-surface-2"}`
+        },
+        /* @__PURE__ */ React.createElement(
+          "button",
+          {
+            onClick: () => handleSelect(c.id),
+            className: "flex flex-1 items-center gap-2.5 text-left"
+          },
+          /* @__PURE__ */ React.createElement(
+            "div",
+            {
+              className: `flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${isActive ? "bg-accent text-accent-text" : "bg-surface-2 text-muted"}`
+            },
+            /* @__PURE__ */ React.createElement(MessageSquare, { size: 15 })
+          ),
+          /* @__PURE__ */ React.createElement("div", { className: "min-w-0 flex-1" }, /* @__PURE__ */ React.createElement("div", { className: "truncate text-sm font-medium" }, c.title), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-muted" }, c.messages.length, " сообщ. · ", formatTime(c.updatedAt)))
+        ),
+        /* @__PURE__ */ React.createElement(
+          "button",
+          {
+            onClick: () => deleteConversation(c.id),
+            className: "rounded-full p-1.5 text-muted opacity-0 transition-all hover:text-danger group-hover:opacity-100",
+            "aria-label": "Delete chat"
+          },
+          /* @__PURE__ */ React.createElement(Trash2, { size: 15 })
+        )
+      );
+    })))));
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/components/SettingsModal.tsx
+  function SettingsModal({ open, onClose, onAddKey }) {
+    const { theme, setTheme } = useTheme();
+    const { models, atLimit, maxKeys } = useSavedModels();
+    if (!open) return null;
+    return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-[60] flex flex-col" }, /* @__PURE__ */ React.createElement("div", { className: "animate-fade-in absolute inset-0 bg-black/50", onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "animate-sheet-up relative mt-auto flex max-h-[88vh] flex-col rounded-t-3xl border-t border-border bg-surface shadow-lg-theme" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-center pt-3" }, /* @__PURE__ */ React.createElement("div", { className: "h-1 w-10 rounded-full bg-border" })), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between px-5 py-3" }, /* @__PURE__ */ React.createElement("h2", { className: "text-base font-semibold" }, "Настройки"), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: onClose,
+        className: "rounded-full p-1.5 text-muted transition-colors hover:bg-surface-2 hover:text-text"
+      },
+      /* @__PURE__ */ React.createElement(X, { size: 18 })
+    )), /* @__PURE__ */ React.createElement("div", { className: "scroll-thin flex-1 overflow-y-auto px-5 pb-4" }, /* @__PURE__ */ React.createElement("div", { className: "mb-5" }, /* @__PURE__ */ React.createElement("label", { className: "mb-2 block text-xs font-medium text-muted" }, "Тема оформления"), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-2.5" }, THEMES.map((t) => {
+      const Icon = t.icon;
+      const isActive = theme === t.id;
+      return /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          key: t.id,
+          onClick: () => setTheme(t.id),
+          className: `relative flex flex-col items-start gap-2 rounded-2xl border p-3 text-left transition-all ${isActive ? "border-accent bg-accent-soft" : "border-border bg-bg hover:border-accent/40"}`
+        },
+        isActive && /* @__PURE__ */ React.createElement("div", { className: "absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent" }, /* @__PURE__ */ React.createElement(Check, { size: 11, className: "text-accent-text" })),
+        /* @__PURE__ */ React.createElement("div", { className: "flex w-full items-center gap-1.5" }, /* @__PURE__ */ React.createElement(
+          "div",
+          {
+            className: "h-7 w-7 shrink-0 rounded-lg border border-border",
+            style: { backgroundColor: t.swatch.bg }
+          },
+          /* @__PURE__ */ React.createElement(
+            "div",
+            {
+              className: "m-auto mt-1 h-4 w-4 rounded-md",
+              style: { backgroundColor: t.swatch.surface }
+            },
+            /* @__PURE__ */ React.createElement(
+              "div",
+              {
+                className: "m-auto mt-1 h-2 w-2 rounded-full",
+                style: { backgroundColor: t.swatch.accent }
+              }
+            )
+          )
+        ), /* @__PURE__ */ React.createElement(Icon, { size: 16, className: "text-muted" })),
+        /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-sm font-medium" }, t.label), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] text-muted" }, t.description))
+      );
+    }))), /* @__PURE__ */ React.createElement("div", { className: "mb-4" }, /* @__PURE__ */ React.createElement("label", { className: "mb-2 block text-xs font-medium text-muted" }, "API Ключи"), /* @__PURE__ */ React.createElement("div", { className: "rounded-2xl border border-border bg-bg p-3" }, /* @__PURE__ */ React.createElement("div", { className: "mb-2 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("span", { className: "text-sm font-medium" }, models.length, " ", models.length === 1 ? "ключ" : "ключей", " добавлено"), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: () => {
+          onClose();
+          onAddKey();
+        },
+        disabled: atLimit,
+        title: atLimit ? `Maximum of ${maxKeys} API keys` : void 0,
+        className: "flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-accent-text transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+      },
+      /* @__PURE__ */ React.createElement(Plus, { size: 14 }),
+      "Добавить"
+    )), models.length > 0 ? /* @__PURE__ */ React.createElement("div", { className: "space-y-1.5" }, models.map((m) => /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        key: m.id,
+        className: "flex items-center gap-2 rounded-xl border border-border bg-surface px-2.5 py-2"
+      },
+      /* @__PURE__ */ React.createElement(KeyRound, { size: 14, className: "shrink-0 text-muted" }),
+      /* @__PURE__ */ React.createElement("div", { className: "min-w-0 flex-1" }, /* @__PURE__ */ React.createElement("div", { className: "truncate text-xs font-medium" }, m.nickname), /* @__PURE__ */ React.createElement("div", { className: "truncate text-[10px] text-muted" }, m.modelLabel))
+    ))) : /* @__PURE__ */ React.createElement("p", { className: "text-xs text-muted" }, "Нет добавленных ключей"))), /* @__PURE__ */ React.createElement("div", { className: "rounded-2xl border border-border bg-bg p-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between gap-2" }, /* @__PURE__ */ React.createElement(RadiantLogo, { size: "sm", className: "!items-start !text-left" }), /* @__PURE__ */ React.createElement("span", { className: "text-[11px] text-muted" }, "v1.0"))))));
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/components/ProfileModal.tsx
+  function GoogleGlyph() {
+    return React.createElement(
+      "svg",
+      { width: 18, height: 18, viewBox: "0 0 48 48", "aria-hidden": "true" },
+      React.createElement("path", { fill: "#EA4335", d: "M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" }),
+      React.createElement("path", { fill: "#4285F4", d: "M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" }),
+      React.createElement("path", { fill: "#FBBC05", d: "M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" }),
+      React.createElement("path", { fill: "#34A853", d: "M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" })
+    );
+  }
+  function Avatar({ url, initial, className, textClass, fallback }) {
+    const [failed, setFailed] = React.useState(false);
+    React.useEffect(() => {
+      setFailed(false);
+    }, [url]);
+    if (url && !failed) {
+      return React.createElement("img", {
+        src: url,
+        alt: "",
+        referrerPolicy: "no-referrer",
+        onError: () => setFailed(true),
+        className: `${className} object-cover`
+      });
+    }
+    if (fallback) return fallback;
+    return React.createElement("div", { className: `${className} flex items-center justify-center bg-accent font-semibold text-accent-text ${textClass || ""}` }, initial);
+  }
+  function TelegramGlyph() {
+    return React.createElement(
+      "svg",
+      { width: 18, height: 18, viewBox: "0 0 24 24", "aria-hidden": "true" },
+      React.createElement("circle", { cx: 12, cy: 12, r: 12, fill: "#27A6E5" }),
+      React.createElement("path", { fill: "#fff", d: "M5.43 11.87c3.5-1.52 5.83-2.53 7-3.01 3.33-1.39 4.02-1.63 4.47-1.64.1 0 .32.02.46.14.12.1.16.23.17.33.02.1.04.31.02.48-.18 1.9-.96 6.5-1.36 8.62-.17.9-.5 1.2-.82 1.23-.7.06-1.23-.46-1.9-.9-1.06-.7-1.66-1.13-2.69-1.8-1.19-.78-.42-1.21.26-1.91.18-.18 3.25-2.98 3.31-3.23.01-.03.01-.15-.06-.21-.07-.06-.17-.04-.25-.02-.11.02-1.8 1.14-5.09 3.36-.48.33-.92.49-1.31.48-.43-.01-1.26-.24-1.88-.44-.76-.25-1.36-.38-1.31-.8.03-.22.33-.45.9-.68z" })
+    );
+  }
+  function TelegramLoginWidget() {
+    const ref = React.useRef(null);
+    React.useEffect(() => {
+      const el = ref.current;
+      if (!el) return;
+      el.innerHTML = "";
+      const s = document.createElement("script");
+      s.async = true;
+      s.src = "https://telegram.org/js/telegram-widget.js?22";
+      s.setAttribute("data-telegram-login", TELEGRAM_BOT_USERNAME);
+      s.setAttribute("data-size", "large");
+      s.setAttribute("data-radius", "8");
+      s.setAttribute("data-request-access", "write");
+      s.setAttribute("data-onauth", "onTelegramAuth(user)");
+      el.appendChild(s);
+      return () => {
+        el.innerHTML = "";
+      };
+    }, []);
+    return React.createElement("div", { ref, className: "flex min-h-[40px] items-center justify-center" });
+  }
+  function ProfileModal({ open, onClose }) {
+    const h = React.createElement;
+    const auth = useAuth();
+    const { user, tgProfile } = auth;
+    const { models, maxKeys, syncStatus, syncError, retrySync } = useSavedModels();
+    const { conversations, chatSyncStatus, chatSyncError, retryChatSync, flushChats } = useConversations();
+    const [mode, setMode] = React.useState("signin");
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const [showPw, setShowPw] = React.useState(false);
+    const [busy, setBusy] = React.useState(false);
+    const [googleBusy, setGoogleBusy] = React.useState(false);
+    const [signingOut, setSigningOut] = React.useState(false);
+    const [status, setStatus] = React.useState(null);
+    React.useEffect(() => {
+      if (!open) {
+        setPassword("");
+        setShowPw(false);
+        setBusy(false);
+        setGoogleBusy(false);
+        setStatus(null);
+        auth.clearTelegramError();
+      }
+    }, [open]);
+    React.useEffect(() => {
+      setStatus(null);
+    }, [mode]);
+    React.useEffect(() => {
+      if (user) {
+        setStatus(null);
+        setBusy(false);
+        setGoogleBusy(false);
+        setPassword("");
+      }
+    }, [user]);
+    React.useEffect(() => {
+      if (!open) return;
+      const onKey = (e) => {
+        if (e.key === "Escape") onClose();
+      };
+      window.addEventListener("keydown", onKey);
+      return () => window.removeEventListener("keydown", onKey);
+    }, [open, onClose]);
+    if (!open) return null;
+    const submit = async (e) => {
+      e.preventDefault();
+      if (busy || googleBusy) return;
+      const em = email.trim();
+      if (!em || !password) {
+        setStatus({ type: "error", text: "Enter your email and password." });
+        return;
+      }
+      if (mode === "signup" && password.length < 6) {
+        setStatus({ type: "error", text: "Password must be at least 6 characters." });
+        return;
+      }
+      setBusy(true);
+      setStatus(null);
+      const res = mode === "signup" ? await auth.signUpWithEmail(em, password) : await auth.signInWithEmail(em, password);
+      setBusy(false);
+      if (res.error) setStatus({ type: "error", text: res.error });
+      else if (res.notice) setStatus({ type: "success", text: res.notice });
+    };
+    const google = async () => {
+      if (busy || googleBusy) return;
+      setGoogleBusy(true);
+      setStatus(null);
+      const res = await auth.signInWithGoogle();
+      if (res.error) {
+        setGoogleBusy(false);
+        setStatus({ type: "error", text: res.error });
+      }
+    };
+    const doSignOut = async () => {
+      setSigningOut(true);
+      try {
+        await flushChats();
+      } catch {
+      }
+      const res = await auth.signOut();
+      setSigningOut(false);
+      if (res.error) setStatus({ type: "error", text: res.error });
+    };
+    const inputCls = "w-full rounded-xl border border-border bg-bg py-2.5 pl-9 pr-3 text-sm text-text outline-none transition-colors placeholder:text-muted focus:border-accent";
+    const closeBtn = h(
+      "button",
+      {
+        onClick: onClose,
+        className: "rounded-full p-1.5 text-muted transition-colors hover:bg-surface-2 hover:text-text",
+        "aria-label": "Close"
+      },
+      h(X, { size: 18 })
+    );
+    const statusLine = (st, error, retry, syncingText, okText, errText) => {
+      if (st === "error") {
+        return h(
+          "div",
+          { className: "flex items-start gap-2 text-xs text-danger" },
+          h(AlertTriangle, { size: 14, className: "mt-0.5 shrink-0" }),
+          h(
+            "div",
+            { className: "min-w-0 flex-1" },
+            h("div", { className: "font-medium" }, errText),
+            h("div", { className: "mt-0.5 break-words text-[11px] text-muted" }, error)
+          ),
+          h(
+            "button",
+            {
+              onClick: retry,
+              className: "flex shrink-0 items-center gap-1 rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-text transition-colors hover:border-accent"
+            },
+            h(RefreshCw, { size: 11 }),
+            "Retry"
+          )
+        );
+      }
+      if (st === "syncing") {
+        return h("div", { className: "flex items-center gap-2 text-xs text-muted" }, h(RefreshCw, { size: 14, className: "animate-spin" }), syncingText);
+      }
+      return h("div", { className: "flex items-center gap-2 text-xs text-muted" }, h(Cloud, { size: 14, className: "text-accent" }), okText);
+    };
+    const rowHead = (Icon, label, count) => h(
+      "div",
+      { className: "mb-1.5 flex items-center justify-between text-xs" },
+      h("span", { className: "flex items-center gap-1.5 font-medium" }, h(Icon, { size: 14, className: "text-muted" }), label),
+      h("span", { className: "text-muted" }, count)
+    );
+    let body;
+    if (user) {
+      const prof = userProfile(user, tgProfile);
+      const avatarUrl = prof.avatarUrl;
+      const providerLabel = prof.providerLabel;
+      const initial = prof.initial;
+      body = h(
+        React.Fragment,
+        null,
+        h(
+          "div",
+          { className: "flex items-center gap-3 rounded-2xl border border-border bg-bg p-3" },
+          h(
+            "div",
+            { className: "relative shrink-0" },
+            h(Avatar, { url: avatarUrl, initial, className: "h-12 w-12 rounded-full border border-border", textClass: "text-base" }),
+            h("span", { className: "absolute -bottom-0.5 -right-0.5 block h-3.5 w-3.5 rounded-full bg-green-500 ring-2 ring-surface", "aria-hidden": "true" })
+          ),
+          h(
+            "div",
+            { className: "min-w-0 flex-1" },
+            h("div", { className: "truncate text-sm font-semibold" }, prof.primary),
+            prof.secondary && h("div", { className: "truncate text-xs text-muted" }, prof.secondary),
+            h(
+              "div",
+              { className: "mt-1 flex items-center gap-1.5 text-[11px] text-muted" },
+              h("span", { className: "block h-1.5 w-1.5 rounded-full bg-green-500" }),
+              "Signed in with ",
+              providerLabel
+            )
+          )
+        ),
+        h(
+          "div",
+          { className: "mt-3 space-y-3 rounded-2xl border border-border bg-bg p-3" },
+          h(
+            "div",
+            null,
+            rowHead(KeyRound, "API keys", `${models.length}/${maxKeys}`),
+            statusLine(syncStatus, syncError, retrySync, "Syncing your API keys\u2026", "Saved to your account.", "API key sync unavailable \u2014 keys are saved on this device.")
+          ),
+          h("div", { className: "h-px bg-border" }),
+          h(
+            "div",
+            null,
+            rowHead(MessageSquare, "Chats", String(conversations.length)),
+            statusLine(chatSyncStatus, chatSyncError, retryChatSync, "Syncing your chats\u2026", "Saved to your account.", "Chat sync failed \u2014 changes will retry.")
+          )
+        ),
+        status && status.type === "error" && h("div", { className: "mt-3 rounded-xl border border-danger bg-bg px-3 py-2 text-xs text-danger", role: "alert" }, status.text),
+        h(
+          "button",
+          {
+            onClick: doSignOut,
+            disabled: signingOut,
+            className: "mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-surface-2 py-3 text-sm font-semibold text-text transition-colors hover:border-danger hover:text-danger disabled:cursor-not-allowed disabled:opacity-50"
+          },
+          h(LogOut, { size: 16 }),
+          signingOut ? "Signing out\u2026" : "Sign Out"
+        )
+      );
+    } else {
+      const tabBtn = (id, label) => h(
+        "button",
+        {
+          type: "button",
+          onClick: () => setMode(id),
+          className: `flex-1 rounded-full py-1.5 text-xs font-medium transition-all ${mode === id ? "bg-surface-2 text-text" : "text-muted hover:text-text"}`
+        },
+        label
+      );
+      body = h(
+        React.Fragment,
+        null,
+        !auth.available && h("div", { className: "mb-3 flex items-start gap-2 rounded-xl border border-danger bg-bg px-3 py-2 text-xs text-danger", role: "alert" }, h(AlertTriangle, { size: 14, className: "mt-0.5 shrink-0" }), "Couldn't load the authentication SDK. Check your connection and reload the page."),
+        h("p", { className: "mb-4 text-xs leading-relaxed text-muted" }, "Sign in to sync your API keys and chats across devices. Without an account, everything stays in this browser's local storage."),
+        h("div", { className: "mb-4 flex rounded-full border border-border bg-bg p-0.5", role: "tablist" }, tabBtn("signin", "Sign In"), tabBtn("signup", "Sign Up")),
+        h(
+          "form",
+          { onSubmit: submit, noValidate: true, className: "space-y-2.5" },
+          h(
+            "div",
+            { className: "relative" },
+            h(Mail, { size: 15, className: "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" }),
+            h("input", {
+              type: "email",
+              value: email,
+              onChange: (e) => setEmail(e.target.value),
+              placeholder: "Email",
+              autoComplete: "email",
+              inputMode: "email",
+              "aria-label": "Email",
+              className: inputCls
+            })
+          ),
+          h(
+            "div",
+            { className: "relative" },
+            h(Lock, { size: 15, className: "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" }),
+            h("input", {
+              type: showPw ? "text" : "password",
+              value: password,
+              onChange: (e) => setPassword(e.target.value),
+              placeholder: mode === "signup" ? "Password (min. 6 characters)" : "Password",
+              autoComplete: mode === "signup" ? "new-password" : "current-password",
+              "aria-label": "Password",
+              className: inputCls + " pr-10"
+            }),
+            h(
+              "button",
+              {
+                type: "button",
+                onClick: () => setShowPw((v) => !v),
+                className: "absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-muted transition-colors hover:text-text",
+                "aria-label": showPw ? "Hide password" : "Show password"
+              },
+              showPw ? h(EyeOff, { size: 15 }) : h(Eye, { size: 15 })
+            )
+          ),
+          status && h(
+            "div",
+            {
+              role: status.type === "error" ? "alert" : "status",
+              className: `rounded-xl border px-3 py-2 text-xs leading-relaxed ${status.type === "error" ? "border-danger bg-bg text-danger" : "border-accent bg-accent-soft text-text"}`
+            },
+            status.text
+          ),
+          h(
+            "button",
+            {
+              type: "submit",
+              disabled: busy || googleBusy || !auth.available,
+              className: "flex w-full items-center justify-center gap-2 rounded-2xl bg-accent py-3 text-sm font-semibold text-accent-text transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            },
+            busy ? "Please wait\u2026" : mode === "signup" ? "Sign Up" : "Sign In"
+          )
+        ),
+        h(
+          "div",
+          { className: "my-4 flex items-center gap-3 text-[11px] uppercase tracking-wider text-muted" },
+          h("div", { className: "h-px flex-1 bg-border" }),
+          "or",
+          h("div", { className: "h-px flex-1 bg-border" })
+        ),
+        h(
+          "button",
+          {
+            type: "button",
+            onClick: google,
+            disabled: busy || googleBusy || !auth.available,
+            className: "flex w-full items-center justify-center gap-2.5 rounded-2xl border border-border bg-surface-2 py-3 text-sm font-semibold text-text transition-colors hover:border-accent disabled:cursor-not-allowed disabled:opacity-50"
+          },
+          h(GoogleGlyph, null),
+          googleBusy ? "Redirecting\u2026" : "Continue with Google"
+        ),
+        h(
+          "div",
+          { className: "mt-3 rounded-2xl border border-border bg-bg p-3" },
+          h("div", { className: "mb-2 flex items-center justify-center gap-2 text-xs font-medium text-muted" }, h(TelegramGlyph, null), "Continue with Telegram"),
+          auth.telegramBusy ? h("div", { className: "flex min-h-[40px] items-center justify-center gap-2 text-xs text-muted", role: "status" }, h(RefreshCw, { size: 14, className: "animate-spin" }), "Signing in with Telegram\u2026") : h(TelegramLoginWidget, null),
+          auth.telegramError && h("div", { role: "alert", className: "mt-2 rounded-xl border border-danger bg-surface px-3 py-2 text-xs leading-relaxed text-danger" }, auth.telegramError)
+        )
+      );
+    }
+    return h(
+      "div",
+      { className: "fixed inset-0 z-[60] flex items-center justify-center p-4", role: "dialog", "aria-modal": "true", "aria-label": "Account" },
+      h("div", { className: "animate-fade-in absolute inset-0 bg-black/60 backdrop-blur-sm", onClick: onClose }),
+      h(
+        "div",
+        { className: "animate-scale-in scroll-thin relative max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-3xl border border-border bg-surface shadow-lg-theme" },
+        h(
+          "div",
+          { className: "flex items-center justify-between px-5 pb-2 pt-4" },
+          h("h2", { className: "text-base font-semibold" }, user ? "Account" : "Welcome to Radiant"),
+          closeBtn
+        ),
+        h("div", { className: "px-5 pb-5 pt-1" }, body)
+      )
+    );
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/App.tsx
+  function AppInner() {
+    const { theme } = useTheme();
+    const { setActiveId } = useConversations();
+    const [activeTab, setActiveTab] = (0, import_react12.useState)("chat");
+    const [historyOpen, setHistoryOpen] = (0, import_react12.useState)(false);
+    const [addKeyOpen, setAddKeyOpen] = (0, import_react12.useState)(false);
+    const [settingsOpen, setSettingsOpen] = (0, import_react12.useState)(false);
+    const [profileOpen, setProfileOpen] = (0, import_react12.useState)(false);
+    const handleTabChange = (tab) => {
+      if (tab === "history") {
+        setHistoryOpen(true);
+      } else {
+        setHistoryOpen(false);
+        setActiveTab("chat");
+      }
+    };
+    const handleNewChat = () => {
+      setActiveId(null);
+      setActiveTab("chat");
+    };
+    return /* @__PURE__ */ React.createElement("div", { className: "flex h-[100dvh] flex-col bg-bg text-text" }, /* @__PURE__ */ React.createElement(
+      Header,
+      {
+        theme,
+        activeTab,
+        onTabChange: handleTabChange,
+        onOpenSettings: () => setSettingsOpen(true),
+        onOpenProfile: () => setProfileOpen(true)
+      }
+    ), /* @__PURE__ */ React.createElement("main", { className: "flex-1 overflow-hidden" }, /* @__PURE__ */ React.createElement(ChatPanel, null)), /* @__PURE__ */ React.createElement(
+      HistoryDrawer,
+      {
+        open: historyOpen,
+        onClose: () => {
+          setHistoryOpen(false);
+          setActiveTab("chat");
+        },
+        onNewChat: handleNewChat
+      }
+    ), /* @__PURE__ */ React.createElement(
+      SettingsModal,
+      {
+        open: settingsOpen,
+        onClose: () => setSettingsOpen(false),
+        onAddKey: () => setAddKeyOpen(true)
+      }
+    ), /* @__PURE__ */ React.createElement(AddKeyModal, { open: addKeyOpen, onClose: () => setAddKeyOpen(false) }), /* @__PURE__ */ React.createElement(ProfileModal, { open: profileOpen, onClose: () => setProfileOpen(false) }));
+  }
+  function App() {
+    return /* @__PURE__ */ React.createElement(AuthProvider, null, /* @__PURE__ */ React.createElement(SavedModelsProvider, null, /* @__PURE__ */ React.createElement(ConversationsProvider, null, /* @__PURE__ */ React.createElement(AppInner, null))));
+  }
+
+  // ../proj/RadiantAI_api_hub-main/src/main.tsx
+  (0, import_client.createRoot)(document.getElementById("root")).render(
+    /* @__PURE__ */ React.createElement(import_react13.StrictMode, null, /* @__PURE__ */ React.createElement(App, null))
+  );
+})();
+
+    </script>
+  </body>
+</html>
